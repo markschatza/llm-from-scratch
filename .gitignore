@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Bytecode / build artifacts
+*.model
+*.vocab
+*.bin
+*.npz
+*.ckpt
+*.pt
+*.pth
+
+# uv lock
+uv.lock
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pretrain outputs
+pretrain/data/sp*
+pretrain/data/*.bin
