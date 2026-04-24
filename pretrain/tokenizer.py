@@ -1,9 +1,19 @@
 """
 Simple BPE tokenizer built on sentencepiece.
-train()     — learn a vocab + model from a text file
-encode()    — tokenize text → token ids
-decode()    — token ids → text
-save() / load() — write/read the .model file
+
+Tokenizer class — load once, use in-memory for the rest of the session.
+train() still returns a Tokenizer instance so callers don't have to
+know about the model path.
+
+Example:
+    # Train fresh
+    tok = train("data/corpus.txt", vocab_size=1024)
+    ids = tok.encode("hello world")
+    text = tok.decode(ids)
+
+    # Load existing
+    tok = Tokenizer.from_pretrained("pretrain/data/sp.model")
+    ids = tok.encode("hello world")
 """
 
 from __future__ import annotations
@@ -13,75 +23,100 @@ import sentencepiece as spm
 from pathlib import Path
 
 
-def train(
-    text_path: str | Path,
-    vocab_size: int = 500,
-    *,
-    output_dir: str | Path = ".",
-    name: str = "tokenizer",
-) -> dict:
+class Tokenizer:
     """
-    Train a SentencePiece BPE model on text_path and save to output_dir.
+    Wraps a SentencePiece model for fast in-memory encode/decode.
 
-    Returns a dict with vocab_size, n_train_tokens, and file paths.
+    Load with Tokenizer.from_pretrained(path) or create fresh with train().
     """
-    text_path = Path(text_path)
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    model_prefix = str(output_dir / name)
 
-    # SentencePiece train arguments
-    spm.SentencePieceTrainer.train(
-        input=str(text_path),
-        model_prefix=model_prefix,
-        vocab_size=vocab_size,
-        model_type="bpe",
-        pad_id=0,
-        unk_id=1,
-        bos_id=-1,   # no BOS
-        eos_id=-1,   # no EOS
-        pad_piece="<pad>",
-        unk_piece="<unk>",
-        # byte-fallback: every token is valid UTF-8
-        byte_fallback=True,
-        add_dummy_prefix=False,
-    )
+    def __init__(self, model_path: str | Path):
+        self.model_path = Path(model_path)
+        self._sp: spm.SentencePieceProcessor | None = None
 
-    model_path = f"{model_prefix}.model"
-    vocab_path = f"{model_prefix}.vocab"
+    def _ensure_loaded(self) -> spm.SentencePieceProcessor:
+        if self._sp is None:
+            self._sp = spm.SentencePieceProcessor()
+            self._sp.load(str(self.model_path))
+        return self._sp
 
-    # Count training tokens via the trained model
-    sp = spm.SentencePieceProcessor()
-    sp.load(model_path)
-    n_train_tokens = len(sp.encode(str(text_path), out_type=int))
+    @property
+    def vocab_size(self) -> int:
+        return self._ensure_loaded().get_piece_size()
 
-    meta = {
-        "vocab_size": vocab_size,
-        "name": name,
-        "model_path": model_path,
-        "vocab_path": vocab_path,
-        "n_train_tokens": n_train_tokens,
-    }
+    def encode(self, text: str) -> list[int]:
+        """Encode string → list of token IDs."""
+        return self._ensure_loaded().encode(text, out_type=int)
 
-    print(f"[tokenizer] trained — vocab size: {vocab_size}, "
-          f"train tokens: {n_train_tokens:,}")
-    print(f"[tokenizer] saved model → {model_path}")
+    def decode(self, tokens: list[int]) -> str:
+        """Decode list of token IDs → string."""
+        return self._ensure_loaded().decode(tokens)
 
-    return meta
+    @classmethod
+    def from_pretrained(cls, model_path: str | Path) -> "Tokenizer":
+        """Load an existing tokenizer from a .model file."""
+        return cls(model_path)
+
+    # ------------------------------------------------------------------
+    # Class-level helpers that return a ready-to-use Tokenizer
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def train(
+        cls,
+        text_path: str | Path,
+        vocab_size: int = 500,
+        *,
+        output_dir: str | Path = ".",
+        name: str = "tokenizer",
+    ) -> "Tokenizer":
+        """
+        Train a SentencePiece BPE model on text_path and return a Tokenizer.
+
+        Example:
+            tok = Tokenizer.train("data/corpus.txt", vocab_size=1024)
+            ids = tok.encode("hello world")
+        """
+        text_path = Path(text_path)
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        model_prefix = str(output_dir / name)
+
+        spm.SentencePieceTrainer.train(
+            input=str(text_path),
+            model_prefix=model_prefix,
+            vocab_size=vocab_size,
+            model_type="bpe",
+            pad_id=0,
+            unk_id=1,
+            bos_id=-1,
+            eos_id=-1,
+            pad_piece="<pad>",
+            unk_piece="<unk>",
+            byte_fallback=True,
+            add_dummy_prefix=False,
+        )
+
+        model_path = f"{model_prefix}.model"
+        print(f"[tokenizer] trained — saved model → {model_path}")
+        return cls(model_path)
+
+
+# ------------------------------------------------------------------
+# Module-level functions — built on top of Tokenizer for ergonomics
+# ------------------------------------------------------------------
+
+_trainer_cache: dict[str, Tokenizer] = {}
 
 
 def encode(text: str, model_path: str | Path) -> list[int]:
-    """Encode string → list of token IDs."""
-    sp = spm.SentencePieceProcessor()
-    sp.load(str(model_path))
-    return sp.encode(text, out_type=int)
+    """Encode string → list of token IDs (loads model each call — prefer Tokenizer class)."""
+    return Tokenizer.from_pretrained(model_path).encode(text)
 
 
 def decode(tokens: list[int], model_path: str | Path) -> str:
-    """Decode list of token IDs → string."""
-    sp = spm.SentencePieceProcessor()
-    sp.load(str(model_path))
-    return sp.decode(tokens)
+    """Decode list of token IDs → string (loads model each call — prefer Tokenizer class)."""
+    return Tokenizer.from_pretrained(model_path).decode(tokens)
 
 
 def encode_file(
@@ -89,7 +124,7 @@ def encode_file(
     output_path: str | Path,
     *,
     model_path: str | Path,
-    output_format: str = "jsonl",
+    output_format: str = "bin",
 ) -> int:
     """
     Encode a text file and save tokens.
@@ -99,16 +134,15 @@ def encode_file(
       "bin"   — raw little-endian uint32 binary (standard pretrain format)
     Returns the total number of tokens written.
     """
-    import json, struct, numpy as np
+    import struct
+    import numpy as np
 
     text_path = Path(text_path)
     output_path = Path(output_path)
     model_path = Path(model_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    sp = spm.SentencePieceProcessor()
-    sp.load(str(model_path))
-
+    tok = Tokenizer.from_pretrained(model_path)
     n_tokens = 0
 
     if output_format == "jsonl":
@@ -118,7 +152,7 @@ def encode_file(
                 line = line.rstrip("\n")
                 if not line:
                     continue
-                tokens = sp.encode(line, out_type=int)
+                tokens = tok.encode(line)
                 fout.write(json.dumps(tokens) + "\n")
                 n_tokens += len(tokens)
 
@@ -129,8 +163,7 @@ def encode_file(
                 line = line.rstrip("\n")
                 if not line:
                     continue
-                tokens = sp.encode(line, out_type=int)
-                all_tokens.extend(tokens)
+                all_tokens.extend(tok.encode(line))
 
         n_tokens = len(all_tokens)
         arr = np.array(all_tokens, dtype=np.uint32)
