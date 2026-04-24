@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Train the tokenizer and encode the corpus.
+Train the tokenizer and encode the corpus to disk.
 
 Usage:
     python pretrain/train_tokenizer.py
@@ -13,11 +13,10 @@ import argparse
 import json
 from pathlib import Path
 
-# Ensure pretrain/ is on the path
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pretrain.tokenizer import train, encode_file
+from pretrain.tokenizer import Tokenizer
 
 
 def main():
@@ -38,38 +37,48 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 1 — Train
-    meta = train(
+    tok = Tokenizer.train(
         text_path=args.corpus,
         vocab_size=args.vocab_size,
         output_dir=output_dir,
         name="sp",
     )
 
-    # 2 — Encode corpus to the chosen format
+    # 2 — Encode corpus
     corpus_stem = args.corpus.stem
     ext = "bin" if args.format == "bin" else "jsonl"
     out_path = output_dir / f"train.{corpus_stem}.{ext}"
 
-    n_tokens = encode_file(
-        text_path=args.corpus,
-        output_path=out_path,
-        model_path=meta["model_path"],
-        output_format=args.format,
-    )
+    if args.format == "jsonl":
+        n_tokens = 0
+        with open(args.corpus, "r", encoding="utf-8") as fin, \
+             open(out_path, "w", encoding="utf-8") as fout:
+            for line in fin:
+                line = line.rstrip("\n")
+                if not line:
+                    continue
+                tokens = tok.encode(line)
+                fout.write(json.dumps(tokens) + "\n")
+                n_tokens += len(tokens)
 
-    # 3 — Summary
-    summary = {
-        **meta,
-        "output_format": args.format,
-        "encoded_tokens": n_tokens,
-        "encoded_path": str(out_path),
-    }
+    elif args.format == "bin":
+        import numpy as np
+        all_tokens: list[int] = []
+        with open(args.corpus, "r", encoding="utf-8") as fin:
+            for line in fin:
+                line = line.rstrip("\n")
+                if not line:
+                    continue
+                all_tokens.extend(tok.encode(line))
+        n_tokens = len(all_tokens)
+        arr = np.array(all_tokens, dtype=np.uint32)
+        arr.tofile(out_path)
+
     print(f"\n[done] tokenizer trained and corpus encoded.")
-    print(f"       model  : {meta['model_path']}")
-    print(f"       vocab  : {meta['vocab_path']}")
+    print(f"       model  : {tok.model_path}")
     print(f"       corpus : {out_path}  ({n_tokens:,} tokens)")
 
-    return summary
+    return tok
 
 
 if __name__ == "__main__":
