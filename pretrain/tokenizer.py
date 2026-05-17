@@ -94,5 +94,5 @@ class Tokenizer:
         )
 
         model_path = f"{model_prefix}.model"
-        print(f"[tokenizer] trained — saved model → {model_path}")
+        print(f"[tokenizer] trained - saved model -> {model_path}")
         return cls(model_path)
