@@ -41,13 +41,15 @@ uv run python pretrain/train_tokenizer.py --vocab-size 2048 --format bin
 
 ### Use on Google Colab
 
-Open the matching notebook for the stage you want to run:
+For Colab, start with `pretrain/train_tokenizer.ipynb`. Colab opens one notebook at a time and does not automatically clone the whole repo when opening a notebook from GitHub, so that notebook's first setup cell clones or reuses the repository under `/content/llm-from-scratch`.
+
+Notebook map:
 
 - `main.ipynb` - project entry point
 - `pretrain/tokenizer.ipynb` - interactive tokenizer class and quick test
 - `pretrain/train_tokenizer.ipynb` - train tokenizer and encode the corpus
 
-The notebooks install `sentencepiece` and `numpy` inside Colab and keep outputs under `pretrain/data/`, matching the CLI folder structure.
+The training notebook installs `sentencepiece` and `numpy` inside Colab and keeps outputs under `pretrain/data/`, matching the CLI folder structure.
 
 ### Use the tokenizer
 
