@@ -1,0 +1,1466 @@
+# Building LLMs from the Ground Up: A 3-hour Coding Workshop
+
+- Source: https://www.youtube.com/watch?v=quh7z1q7-uc&t=3516s
+- Video ID: `quh7z1q7-uc`
+- Transcript language: `en-US`
+- Fetched: 2026-05-18 15:00:19 UTC
+
+## Transcript
+
+- [00:00:00.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=0s) Hi everyone. So today I want to talk about building LLM's large language models
+- [00:00:07.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7s) from the ground up. And this is going to be a coding workshop. So I will show you a few
+- [00:00:11.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=11s) slides maybe for five to 10 minutes, but the remainder of this video will be actually focused
+- [00:00:16.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=16s) on code, I will show you the concrete steps on that one might take to implement a large
+- [00:00:21.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=21s) language model from scratch. So just briefly about myself, my name is Sebastian Raschka.
+- [00:00:28.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=28s) I'm currently a staff research engineer at Lightning AI. And yeah, we develop an AI platform.
+- [00:00:35.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=35s) And I'm also specifically there involved in LLM research and implementing LLMs. So that's
+- [00:00:42.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=42s) currently my focus. And previously, I was an assistant professor of statistics at the
+- [00:00:47.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=47s) University of Wisconsin--Madison, where I did deep learning and AI research. So the
+- [00:00:54.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=54s) workshop topics are listed here. So there are six topics on the introduction to LLMs.
+- [00:00:59.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=59s) It's this 10 slides I have prepared, but then sections two to six will be focused
+- [00:01:05.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=65s) on code. So we will be looking at a lot of code examples today. And yeah, first I will
+- [00:01:10.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=70s) introduce what the input data to an LLM looks like. And I think this is maybe the most fundamental
+- [00:01:16.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=76s) topic if you want to understand how LLMs work. Because yeah, if you understand how the data
+- [00:01:21.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=81s) looks like that goes into an LLM, how it's formatted, and also maybe the data that comes
+- [00:01:26.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=86s) out of it, I think you already have like 80% of the understanding that it takes to let's
+- [00:01:31.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=91s) say understand how to understand how LLMs work. Then yeah, of course, we will be also
+- [00:01:37.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=97s) coding the LLM architecture itself in section three. We'll keep this relatively brief, but
+- [00:01:43.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=103s) I will show you the fundamental concepts. And then yeah, the exciting part, we will
+- [00:01:47.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=107s) be pre-training an LLM ourself on a very, very small data set, because yeah, LLM training
+- [00:01:53.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=113s) takes time. So this is more focused on showing you how it actually works. And then we will
+- [00:01:59.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=119s) train, of course, an LLM, but we will also be loading larger, more capable LLMs from
+- [00:02:04.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=124s) pre-trained weights. So we will also look at that. And lastly, we will be fine tuning
+- [00:02:09.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=129s) LLMs to follow human instructions. So just to, for maybe five minutes, give you a general
+- [00:02:16.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=136s) introduction to LLMs. If you have not used LLMs, I would say the most common way, of
+- [00:02:21.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=141s) course, would be using ChatGPT. But I believe maybe most of you have done this before. So
+- [00:02:27.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=147s) for example, ChatGPT is an online proprietary service where you can access GPT-4
+- [00:02:34.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=154s) models, for example. And yeah, you can ask it questions, for example, give it tasks,
+- [00:02:39.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=159s) for example, here, fix my spelling errors, and it will hopefully give you a good result
+- [00:02:44.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=164s) here. So fixing, in this case, spelling, but it can also do many, many other things that
+- [00:02:48.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=168s) can answer general questions, summarizing text, and so forth. So this would be one way
+- [00:02:54.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=174s) of using LLMs via proprietary service. Another one would be, for example, using your
+- [00:03:01.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=181s) private or custom LLM locally. So you can start, for example, with available LLM, for
+- [00:03:08.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=188s) example, Llama or Phi or Gemma by Google. So there are different companies and people and
+- [00:03:15.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=195s) research institutes that share LLMs. And here, LitGPT is, for example, a library that
+- [00:03:22.580](https://www.youtube.com/watch?v=quh7z1q7-uc&t=202s) implements lots of these different LLMs and lets you fine tune them. So I'm just showing you one example
+- [00:03:26.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=206s) of how I usually do it. So it's a library of help developing. And so here, in this case,
+- [00:03:31.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=211s) you can say `litgpt chat checkpoint`. And yeah, and then you can ask it a similar
+- [00:03:36.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=216s) question, or give it a similar task, fix my spelling errors. And usually it performs pretty
+- [00:03:41.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=221s) well, because it's a pretty capable model. So this would be the Microsoft Phi-3
+- [00:03:45.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=225s) model. And this would be another way of using an LLM. And a third way would be deploying
+- [00:03:52.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=232s) an LLM API endpoint. So with that, I mean, so the previous example, maybe to go one step
+- [00:03:59.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=239s) back, is about running an LLM locally. In this case, I was using a cloud environment, but
+- [00:04:04.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=244s) you can also do that on your own computer. But not every computer, has a GPU.
+- [00:04:09.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=249s) And for most LLMs, I would recommend using GPUs, or at least if you want to access more
+- [00:04:14.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=254s) powerful LLMs. If you, for example, watch the Apple keynote recently, they announced
+- [00:04:20.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=260s) on to bring local LLMs to iPhones and MacVooks that can run on a CPU, or Microsoft also,
+- [00:04:27.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=267s) I think has these Copilot PCs, but they also focus on running some models on a CPU, but
+- [00:04:33.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=273s) still, these are very small models. If you want to really run larger models that are
+- [00:04:39.220](https://www.youtube.com/watch?v=quh7z1q7-uc&t=279s) potentially more capable. Yeah, then it's really highly recommended to use a GPU. And
+- [00:04:44.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=284s) if your computer doesn't have a GPU, what you can do is you can, for example, deploy
+- [00:04:48.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=288s) an LLM on a server. And then you can use it via an API endpoint on your local computer
+- [00:04:55.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=295s) to access it. And it will be kind of like using ChatGPT, but it will be your private
+- [00:05:00.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=300s) LLM. So just to show you an example. So for example, I can do LGBT surf, and then serving
+- [00:05:06.140](https://www.youtube.com/watch?v=quh7z1q7-uc&t=306s) this model, it could be a base model or fine tuned model. And it spins it up on the server.
+- [00:05:11.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=311s) And then here in my local terminal, for example, I can then query it via an API endpoint. So
+- [00:05:17.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=317s) I here I use an address. So this is like a local address, but you can also specify the
+- [00:05:22.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=322s) port and address. And then you can query it in a Python session, basically. So I could
+- [00:05:28.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=328s) deploy an LLM on a GPU server and then use it on a local machine. Or if I
+- [00:05:35.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=335s) am developing a phone app, iPhone app or something, I can plug that into my app that
+- [00:05:40.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=340s) queries a server and so forth. It's just an example. But these are three things using
+- [00:05:46.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=346s) a proprietary service, running a local LLM and deploying an API endpoint, I would say
+- [00:05:52.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=352s) are the most three most common ways of working with or using LLMs. This workshop is not so
+- [00:06:00.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=360s) much about using LLMs. It's about developing an LLM. So I will in this workshop go through
+- [00:06:05.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=365s) several stages on stage one, the building where we have the data preparation and sampling
+- [00:06:11.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=371s) and the architecture coding. Then we will have stage two with the pre training and stage
+- [00:06:17.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=377s) three with a fine tuning. So this is essentially a whole workflow of starting from data and
+- [00:06:25.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=385s) then ending with an instruction fine tuned LLM. And in this workshop, because we want
+- [00:06:30.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=390s) to keep it relatively, I would say digestible. So a few hours, three,
+- [00:06:37.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=397s) four hours, I want to cover all the topics in great detail, but I will focus on these
+- [00:06:42.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=402s) four main points, the data preparation and sampling, coding the architecture, the training
+- [00:06:48.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=408s) loop and loading the pre-trained weights, where we will be doing these from the ground
+- [00:06:52.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=412s) up, which means really starting from scratch, not using any existing LLM libraries, because
+- [00:06:59.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=419s) I think this is actually a really great way of understanding how an LLM works. If we really
+- [00:07:05.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=425s) do all the work ourselves, instead of just calling some functions that we don't
+- [00:07:11.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=431s) really understand how they work. So I think this is really important if you really want
+- [00:07:14.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=434s) to understand something to, yeah, to start from the ground up or look for resources or
+- [00:07:20.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=440s) code that really walk you through the individual steps that you can then follow and really
+- [00:07:25.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=445s) make sure that, yeah, this makes sense to you. And then you can also more easily adapt and
+- [00:07:30.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=450s) develop better versions of it, for example. So most of the code for that will be based
+- [00:07:36.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=456s) on my book, Build a Large Language Model from Scratch. So it's currently available on the
+- [00:07:41.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=461s) Manning website. It's a short link here, or you can also find the code examples corresponding
+- [00:07:46.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=466s) to the book on GitHub. So most of the figures and the code in this workshop are from the
+- [00:07:52.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=472s) book, but it's of course not the same as the book. The book is way more detailed
+- [00:07:56.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=476s) where in this workshop, we will be covering approximately 20 to 30%. But if you're interested,
+- [00:08:02.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=482s) you know, here you can find more details. For the instruction fine-tuning part, I also
+- [00:08:09.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=489s) have an extensive section on that in the book, which is probably even the longest chapter
+- [00:08:14.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=494s) in the book. However, because I don't want to make this a 12-hour workshop, we will be
+- [00:08:19.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=499s) using for this part a library called LitGPT that I helped developing. So here in this
+- [00:08:25.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=505s) part, the instruction fine-tuning, we will be using also an optimized open source library
+- [00:08:30.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=510s) that is making this very efficient. Okay, so these are the topics we are going to cover.
+- [00:08:37.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=517s) And yeah, if you want to learn more about LitGPT, you can find it also on GitHub here.
+- [00:08:42.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=522s) And there is also a cloud environment that you can use. So what I wanted to say is, so
+- [00:08:49.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=529s) for this workshop, there are two different ways you can follow along. And I highly recommend
+- [00:08:53.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=533s) when you're watching this video to follow along with your own code session.
+- [00:08:58.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=538s) So to just execute it by yourself, also alongside and see if it all makes sense
+- [00:09:04.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=544s) to you. And you can then also make modifications or change things up and see how it affects
+- [00:09:10.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=550s) the results. And I think that's a great way to learn, in my opinion. So there are two
+- [00:09:15.220](https://www.youtube.com/watch?v=quh7z1q7-uc&t=555s) ways you can follow along. And one is I have a Lightning Studio, which is in a sense like
+- [00:09:21.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=561s) an interactive environment. You can think of it roughly as Google Colab, but it's more
+- [00:09:28.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=568s) sophisticated where you can run the code examples on in the Visual Studio Code environment in
+- [00:09:32.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=572s) notebooks, or as Python scripts. And you can also change the CPU and GPU. So for example,
+- [00:09:39.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=579s) for the first part of the workshop, we will be mainly using CPUs. And then because we
+- [00:09:44.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=584s) don't need to use a GPU for that. And then we can flexibly when we need it, switch to
+- [00:09:48.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=588s) a GPU. But we don't have to set anything up. So here, in this one, I have already downloaded
+- [00:09:54.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=594s) all the model checkpoints, I already installed all the dependencies. So it will make your
+- [00:09:58.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=598s) life basically easier. However, if you want to set everything up on your own computer,
+- [00:10:03.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=603s) you can also use this GitHub link here. And there I have all the code examples. But again,
+- [00:10:08.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=608s) you have to install the dependencies and download all the files. But it's up to you which of
+- [00:10:14.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=614s) course you want to follow both have the identical code examples. So yeah, like I said, I would
+- [00:10:20.580](https://www.youtube.com/watch?v=quh7z1q7-uc&t=620s) recommend using the Lightning Studio. So in that case, you don't have to worry about
+- [00:10:24.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=624s) dependencies and downloading any files. Alternatively, you can find the setup instructions for all
+- [00:10:30.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=630s) the code here on GitHub, under the setup subfolder. And yeah, this is basically it for the introduction.
+- [00:10:37.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=637s) So I would recommend either the Lightning Studio or the GitHub setup to get started.
+- [00:10:44.140](https://www.youtube.com/watch?v=quh7z1q7-uc&t=644s) And then I will actually now dive into the code. All right, let's take a look at some
+- [00:10:51.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=651s) code now. So all the code should be here on GitHub, or under this link. And if you want
+- [00:10:57.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=657s) to use the code locally on a laptop computer, I have instructions here for installing
+- [00:11:04.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=664s) everything. But yeah, more conveniently, you can also use this Studio. So `Open Studio` brings
+- [00:11:10.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=670s) you to this landing page. And then you can duplicate this Studio here to run the code
+- [00:11:18.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=678s) like I have it here. And yeah, this contains all the different sections we are going through
+- [00:11:25.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=685s) in this video. And there are also additionally some downloaded model checkpoint files that
+- [00:11:30.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=690s) we will be using later. But yeah, so in this first section, let's get started with section
+- [00:11:38.580](https://www.youtube.com/watch?v=quh7z1q7-uc&t=698s) two, we already talked about the introduction. So this was just the slides I showed you.
+- [00:11:43.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=703s) Now we are on to part two. And this is about the data preparation. So understanding how
+- [00:11:51.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=711s) data input is prepared for an LLM, which is actually quite useful because it helps you
+- [00:11:56.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=716s) also understand what the LLM receives as input. And yeah, essentially what it has to work
+- [00:12:03.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=723s) when we pre train it. So yeah, this is a Jupyter notebook, I have all the code in here, I will
+- [00:12:10.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=730s) go through it step by step. So it's actually I would say maybe 20 or 30% of that is taken
+- [00:12:15.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=735s) from my book. Of course, the book is much more detailed about I don't want to make this
+- [00:12:20.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=740s) a week long video. So I just, you know, rely on a few smaller subsets, and especially for
+- [00:12:27.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=747s) the figures. Yeah, in any case, so in this notebook, we will be using PyTorch at the
+- [00:12:35.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=755s) end for data loading and library called tiktoken. But other than that, everything will
+- [00:12:40.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=760s) be relatively from scratch, which means we are not using any other LLM library. And we
+- [00:12:46.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=766s) will get to what that is later in this notebook. So if you run the Studio, it should already
+- [00:12:54.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=774s) be installed. So you don't have to worry about it. Otherwise, like I mentioned, if you're
+- [00:12:58.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=778s) running this locally, there is a setup folder here, where you can find instructions for
+- [00:13:04.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=784s) installing packages and stuff. Okay, so getting started with the data preparation and sampling,
+- [00:13:10.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=790s) which would be the first stage when we start working with an LLM. That is also
+- [00:13:17.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=797s) true, whether we want to use an existing LLM, or if we want to even develop our own
+- [00:13:24.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=804s) LLM, because yeah, without data, the LLM can't do really much. Yeah, okay. So in this
+- [00:13:33.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=813s) figure, I'm kind of like summarizing everything that we have to do when we prepare the data.
+- [00:13:41.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=821s) So essentially, we start with input text that is here just a very small example consisting
+- [00:13:47.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=827s) of four words and a punctuation sign. But just you know, like a simple example that
+- [00:13:51.580](https://www.youtube.com/watch?v=quh7z1q7-uc&t=831s) fits into one figure. And the first step would be tokenizing this text, which means breaking
+- [00:13:57.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=837s) this up into individual in this case, word tokens, and then one punctuation token here.
+- [00:14:04.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=844s) And these tokens then get on converted into token IDs, which are you can think of it as
+- [00:14:11.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=851s) number representations of this text. So if this is a text string, these are just integer
+- [00:14:16.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=856s) numbers. And these integer numbers then get converted into embeddings. So I was thinking
+- [00:14:23.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=863s) really hard about whether I should include embeddings or not. And originally, if you see
+- [00:14:30.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=870s) the GitHub commit history, I had the embeddings come included, but it ended up being way too
+- [00:14:35.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=875s) much material for this three to four hour workshop. So I don't cover the embeddings here,
+- [00:14:41.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=881s) but it's essentially a process of converting the token IDs into continuous vector representation.
+- [00:14:50.140](https://www.youtube.com/watch?v=quh7z1q7-uc&t=890s) So in this notebook, and specifically in this notebook, we will be talking about this part
+- [00:14:57.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=897s) from input text to the token IDs. And then I will also load the data using a PyTorch data
+- [00:15:03.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=903s) loader. And so the data set we will work with is The Verdict by Edith Watson, Wharton, sorry,
+- [00:15:13.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=913s) Edith Wharton, that's the correct name. And this is a public domain short story. So
+- [00:15:19.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=919s) public domain means this has this is a book that has been a short story that has been
+- [00:15:24.260](https://www.youtube.com/watch?v=quh7z1q7-uc&t=924s) written a long time ago, maybe 100 200 years ago, something like that. And so there is no
+- [00:15:30.220](https://www.youtube.com/watch?v=quh7z1q7-uc&t=930s) copyright on that. So this is like a data set that we can use for LLM training. So if you are
+- [00:15:35.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=935s) preparing data sets, I recommend always being aware and respectful of existing copyrights. So
+- [00:15:42.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=942s) basically saying that we can't just, you know, copy certain texts from the web, because there
+- [00:15:49.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=949s) may be copyrights on it that we then also should be respectful of. In any case, this is a public
+- [00:15:55.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=955s) domain book that we can use. And I'm just using a very, very small book for illustration purposes
+- [00:16:02.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=962s) so that the training later in section four will be relatively fast so that we don't
+- [00:16:09.580](https://www.youtube.com/watch?v=quh7z1q7-uc&t=969s) have to wait a week for our model to finish the pre training. So this text consists of 20,000
+- [00:16:17.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=977s) characters. And yeah, it's just regular text, plain text. So here is an excerpt of the first
+- [00:16:23.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=983s) 100 characters, essentially. And like I've shown you earlier in the figure, the goal here is first
+- [00:16:32.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=992s) to tokenize the text, which means breaking it down into individual tokens, which are words,
+- [00:16:39.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=999s) punctuation signs, and so forth. And yeah, this is actually a big topic itself, it could
+- [00:16:45.300](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1005s) be the whole four hour lecture, discussing how tokenizers work, but tokenizers are not really
+- [00:16:52.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1012s) the LLM itself. So in this case, I will only show you a simple tokenizer and then show you a
+- [00:16:59.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1019s) tokenizer that is used for GPT models. But just to get an idea of how it works, it's a simple
+- [00:17:07.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1027s) tokenization scheme. So here, I'm using a regular expression that splits text based on white space
+- [00:17:14.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1034s) characters, and punctuation and so forth. So everything will be kind of split like you can see
+- [00:17:21.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1041s) here. If you are not familiar with regular expressions, even that is probably a two hour
+- [00:17:26.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1046s) topic by itself or even longer. So yeah, I usually also I'm really not that good at regular
+- [00:17:33.420](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1053s) expressions anymore, thanks to LLMs, because you know, you can actually also ask LLMs to help you
+- [00:17:38.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1058s) with generating certain regular expressions. The idea here though, is that we are splitting the text
+- [00:17:45.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1065s) into these tokens. So actually, I don't need this line, even it's redundant. So I'm splitting the
+- [00:17:51.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1071s) text into tokens here. And you can see it's essentially one word per token. And then we also
+- [00:17:58.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1078s) have the white spaces here as separate tokens. So these are the first 38 tokens here. If I then
+- [00:18:05.740](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1085s) print the length, so we have 9000 tokens. So that's the total number of tokens in this The Verdict
+- [00:18:13.060](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1093s) data set. We can also take a look at the unique tokens. So for example, I can do the length, and
+- [00:18:21.140](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1101s) then the set. So in Python, the set gets rid of duplicates, it's basically basically just unique
+- [00:18:27.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1107s) entries. So I can do length pre processed here. And this should give me the number of unique
+- [00:18:35.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1115s) tokens. So we have 1133 unique tokens in this data set. Next, or actually, I can also show you this if
+- [00:18:47.220](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1127s) you're interested, pre processed. So these are basically the unique tokens should be sorry, these
+- [00:18:55.980](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1135s) should be the unique tokens, of course. So these are not containing the white spaces anymore. They
+- [00:19:01.140](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1141s) are just the unique tokens. I can also maybe sort them alphabetically. See. So yeah, here we have
+- [00:19:12.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1152s) the unique tokens in increasing order in Python, usually capitalized words, goal before the lower
+- [00:19:21.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1161s) case words. Okay, so next we can convert these tokens into the token IDs. But for that before we
+- [00:19:29.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1169s) can do that as one more step. And that is building a so called vocabulary. So looking at this figure,
+- [00:19:36.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1176s) we have a training data set, this would be The Verdict that we just looked at. The first
+- [00:19:41.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1181s) step that we already did is when we tokenized this data set, which means we took this and converted
+- [00:19:47.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1187s) this into these individual word tokens. Now, the next step is to build this vocabulary from all the
+- [00:19:56.940](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1196s) tokens in the training set. So for that is, for that, what we do is we take or consider each unique
+- [00:20:04.180](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1204s) token and add it to the vocabulary and alphabetic order, which is kind of like what I've done here.
+- [00:20:10.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1210s) So yeah, extracted all the unique tokens. And next, once we have these unique tokens, we assign a
+- [00:20:19.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1219s) unique token ID to them. So here they are in alphabetic order. And then I'm assigning a token ID,
+- [00:20:26.620](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1226s) essentially, just an integer number, you can think of it just like unique mapping from word to integer.
+- [00:20:36.460](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1236s) So how I do this is, so here's actually the same code I used earlier, above so to get the unique
+- [00:20:43.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1243s) tokens, I'm calculating the vocabulary size, which is equal to the unique tokens are the number of
+- [00:20:49.860](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1249s) unique tokens. And here now I create this dictionary. So I say for each. So let's do this
+- [00:20:59.380](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1259s) maybe step by step. So for each word, so sorry for you for each word, we have a for loop for I in
+- [00:21:08.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1268s) numerate. So this will be giving me IDs from zero to one. So I can do print I and you will see it will
+- [00:21:16.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1276s) go from zero to 1132. And it will give me also the corresponding token. So because enumerate gives me
+- [00:21:28.100](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1288s) the number, the index, along with all the unique tokens. So what I'm doing now is I'm using the
+- [00:21:36.540](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1296s) token and map it to the integer. So I'm basically reverting this instead of from integer to token, I
+- [00:21:41.780](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1301s) have token to integer. So I can actually take a look at this. Or actually, I have it already here,
+- [00:21:47.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1307s) so I don't need to retype it. So I can actually look at the first 50 entries and can
+- [00:21:53.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1313s) show you then how this looks like. So here, we have now the tokens mapping to these IDs. And you
+- [00:22:01.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1321s) can see on the punctuation characters come first, and then we have them in alphabetical order. So
+- [00:22:07.900](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1327s) each kind of like here, each unique token maps to unique token ID. In this case, we have 1133 token
+- [00:22:17.340](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1337s) IDs. And yeah, and then once we have this vocabulary, we store this vocabulary because we
+- [00:22:24.020](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1344s) need to use it now to convert our text. So we have some sample text here, we tokenize it, which
+- [00:22:31.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1351s) is what we've already done. And then we use this vocabulary that we have just built to convert it
+- [00:22:38.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1358s) into token IDs. So now we are using this tokenized text and converted to token IDs using this
+- [00:22:45.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1365s) vocabulary. And you might wonder, where do these numbers come from? That is because how our
+- [00:22:54.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1374s) vocabulary is constructed. So maybe, let's see the it's, I mean, it would be down here, but the
+- [00:23:00.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1380s) would be corresponding to token ID seven. So if I scroll up a bit here, so this would be the last
+- [00:23:06.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1386s) entry, it would correspond to ID seven. And then, you know, vocabulary, brown corresponds to zero,
+- [00:23:15.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1395s) doc corresponds to one. And this is how we come up with zero, sorry, 701, by just looking up the
+- [00:23:22.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1402s) respective token IDs for these words. We could put everything together into a Python class. And
+- [00:23:31.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1411s) this, this will make it easier to use this in practice, this concept. So here I have a simple
+- [00:23:38.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1418s) tokenizer class. And before I show you maybe the code, or before I discuss the code, let's take a
+- [00:23:46.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1426s) brief look at the figure here. And so what this tokenizer class is supposed to do is it's supposed
+- [00:23:52.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1432s) to encode text, like here, so you have text, and then you encode it into encoding will essentially
+- [00:23:59.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1439s) break down the text into tokens, you can then use the vocabulary to convert these tokens into token
+- [00:24:06.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1446s) IDs. And then there's also a reverse function, it's this tokenizer decode method. And this, this
+- [00:24:14.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1454s) method will take token IDs. So when we have token IDs here, converted back into these token strings,
+- [00:24:21.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1461s) and then assemble the token strings back into text. So you go from basically text to token IDs, and
+- [00:24:28.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1468s) then back from token IDs to text. So I can maybe just show you how this works here. So if I
+- [00:24:37.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1477s) initialize the tokenizer, simple tokenizer version one, I give it the vocabulary, it's a vocab,
+- [00:24:45.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1485s) right, may have to execute, I did execute this, okay, it should be fine. So I need to execute this
+- [00:24:54.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1494s) first, of course. So now, when we initialize this tokenizer with this init method, it will store the
+- [00:25:02.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1502s) vocabulary string to integer. So this is the vocabulary we use to map from string to integer
+- [00:25:09.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1509s) that we already created. And then we can also have a reverse vocabulary. So this maps from integer to
+- [00:25:15.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1515s) string. So here, it's essentially just reversing it. So instead of string integer, we have integer
+- [00:25:22.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1522s) string. So just to show you how it looks like, let's go maybe here. So I have my vocab that maps
+- [00:25:32.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1532s) from string to integer, and I can say integer string for string integer, and vocab, oops, keep
+- [00:25:45.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1545s) hitting this down button for some reason. And this should be items, I think, because otherwise, I
+- [00:25:54.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1554s) will iterate over the keys should work. Yep. So this is now essentially the reverse mapping from
+- [00:26:00.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1560s) integers to the strings. Okay, and so this happens when we initialize it. So it constructs this, and
+- [00:26:08.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1568s) then we can use the encode method, the `encode` method that can then convert our text into token
+- [00:26:17.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1577s) IDs. So let me from the top grab some, I can actually also go here. Let's just scroll down here,
+- [00:26:24.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1584s) sorry for scrolling so much. So I can go here to The Verdict. Let's just copy some text here, and
+- [00:26:37.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1597s) tokenize this text. So here, I'm going to tokenize it. And yeah, you see, we have these integers now.
+- [00:26:46.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1606s) And I can do the same thing in reverse. So I can take this and say `tokenizer.decode()`. And this will be
+- [00:26:57.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1617s) just doing the same thing, but the other way around. So we go now from the token IDs to this text here.
+- [00:27:05.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1625s) And yep, this is essentially how the tokenizer works. So we have method encode that goes from text to
+- [00:27:15.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1635s) token IDs. And then we have the other way we go from token IDs back into text. Okay yeah, this is
+- [00:27:25.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1645s) our simple tokenizer. I already showed you this. So nothing new here. And now I should say, I mean,
+- [00:27:32.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1652s) there's a reason why I called it simple tokenizer version one, this is really just a very naive,
+- [00:27:39.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1659s) simple tokenizer. It's to illustrate the two concepts of encode and decode. Now in practice,
+- [00:27:47.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1667s) when you use a LLM or a tokenizer, you usually when you use an existing LLM, you use a pre trained
+- [00:27:54.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1674s) tokenizer. So when you are creating a new LLM, there's actually a training for the tokenizer where
+- [00:28:02.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1682s) you are applying the tokenizer to a data set through the training data set, and then it learns a
+- [00:28:07.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1687s) vocabulary like similar to what we have done before. Now, in practice, there are more sophisticated
+- [00:28:14.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1694s) algorithms for that. And one of them is called byte pair encoding. And what's special about byte
+- [00:28:20.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1700s) pair encoding is that it can handle unknown words. So in this workshop, because this would be another
+- [00:28:28.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1708s) four hours implementing byte pair encoding and training it from scratch, we are going to use the
+- [00:28:33.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1713s) tiktoken library, which is the open source library from OpenAI that has what is very popular
+- [00:28:40.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1720s) and is used to, you know, tokenize text for GPT type models. It's pretty fast. So it's a Python
+- [00:28:47.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1727s) library, but it is implemented in Rust under the hood. And I compared it to some other
+- [00:28:53.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1733s) implementations, for example, the original byte per encoder by by open AI that was used for GPT
+- [00:29:00.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1740s) two. And it was three times faster than that. And I compared it also to the BPE tokenizer and
+- [00:29:07.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1747s) hugging face. And your tiktoken was six times faster. So it's it's much, much, much faster than
+- [00:29:14.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1754s) the Hugging Face tokenizer. So that's why we are going to use this particular tokenizer.
+- [00:29:19.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1759s) It's a nice and fast tokenizer. And I will show you in a moment how it works. So first, we are
+- [00:29:26.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1766s) going to use the GPT two version of that. And then really, the way it works is very, very similar
+- [00:29:35.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1775s) to the way we used it before. Also, we used our own simple version one tokenizer. So there's also
+- [00:29:41.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1781s) an encode method and a decode method. And it's essentially the same input. So it takes text and
+- [00:29:48.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1788s) codes it into integers. And then it takes integers and decodes it, decodes it back into text, just
+- [00:29:55.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1795s) to show it to you here. And one thing maybe I should mention is this part. And so there is another
+- [00:30:04.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1804s) specific token called end of text token. And this is a token used by GPT models to denote when a text
+- [00:30:14.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1814s) ends and when a new text starts. So for example, when you are preparing a training data set, you
+- [00:30:19.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1819s) may have multiple books, usually, for example, when people train the Llama three model, they used 15
+- [00:30:27.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1827s) trillion tokens, like many, many websites and books, and so forth. And so usually, you would insert
+- [00:30:33.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1833s) this end of text token, if you train a GPT like model, after each document or each book or website,
+- [00:30:40.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1840s) so forth. So this is really just a text delimiter. And here I'm just showing you that in this
+- [00:30:50.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1850s) particular case for tiktoken, it's not included for some reason in the standard GPT to encoding
+- [00:30:58.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1858s) by vocabulary. For some reason, you have to explicitly add it here. And this will be then
+- [00:31:04.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1864s) corresponding to the 50,257th token, because in PyTorch, or in Python, we start with zero
+- [00:31:13.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1873s) indexing. So we have 50,257 tokens in this BPE tokenizer. One thing that is special also about
+- [00:31:24.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1884s) BPE compared to our own tokenizer is that it can handle unknown words. So what I mean is I could
+- [00:31:30.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1890s) technically go here and say tokenizer, encode, and then some really made up text, and it will still
+- [00:31:40.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1900s) work. So here, in this case, it will still work. I can, for example, say tokenizer to find out what
+- [00:31:47.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1907s) these IDs correspond to. Say decode. And let's take the first one is 292. So I'm just taking this
+- [00:32:01.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1921s) token here. And let's see what this decodes to. So it's actually considering this as a token,
+- [00:32:06.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1926s) the AS. And for the second one, it's considering decay. So how it works is essentially that each
+- [00:32:16.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1936s) character can be a single token if it's like this, where it's like an unknown word. But if the model
+- [00:32:24.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1944s) has seen words before that look similar, for example, as or decay, then it will use two
+- [00:32:32.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1952s) character tokens. So in other words, what I'm trying to say is it can handle unknown words by
+- [00:32:38.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1958s) breaking them down into individual subparts. There's actually a quite interesting algorithm
+- [00:32:44.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1964s) behind on behind this. I'm not covering it here, because yeah, it would be a long lecture, but it
+- [00:32:50.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1970s) might be an interesting future video sometime. But yeah, we are going to use this BPE tokenizer for
+- [00:32:57.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1977s) all the remaining sections in this workshop. So one more thing I wanted to briefly cover is the
+- [00:33:05.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1985s) data loading. Yeah, because I don't want to spend like five hours of your time on preparing the
+- [00:33:12.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1992s) data set, I will not go into too much detail of how the data loading is implemented here in this
+- [00:33:18.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=1998s) particular workshop. But one thing I think we should talk about is how the data is roughly
+- [00:33:24.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2004s) structured. And so LLMs, when they are pre trained, they learn to predict one word at a time. So if I
+- [00:33:30.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2010s) have some input texture in blue, it would generate the next word here and in red, the learns LLMs learn.
+- [00:33:37.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2017s) And then for the next input, LLMs learn, it would generate two, the next word. And this is usually
+- [00:33:44.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2024s) how we talk about the LLM pre training, the next word prediction task, and so forth. But
+- [00:33:51.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2031s) what really happens under the hood is the LLM predicts the plus one token at each position. So
+- [00:34:00.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2040s) it's very more clear if I show you this figure here. So here I have some input text. And in blue,
+- [00:34:07.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2047s) this would be my my input. I'm not showing you the so the LLM would see the token IDs, which are
+- [00:34:14.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2054s) then embedded. But I'm showing you the text here, because it's a bit more readable. So here, let's
+- [00:34:20.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2060s) say we have input text instead of token IDs. So because then you can better visualize it. So the
+- [00:34:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2066s) first input, if I have a context size of four, would be in the heart of and then the targets, the
+- [00:34:34.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2074s) thing that I want to predict is the inputs shifted by one position to the right. So you can see in
+- [00:34:41.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2081s) blue, that's the input and in red, that's the targets shifted by one position to the right. So
+- [00:34:47.220](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2087s) LLMs are really trained on target tokens that are shifted by one position. So if I feed
+- [00:34:54.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2094s) the LLM this input, it should generate this output. And how I get this next word at a time here that
+- [00:35:02.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2102s) I'm showing you here is by taking only the last token. So for example, if I have this input, the
+- [00:35:11.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2111s) model generates this output, I would only consider this last token here, the basically. So in this
+- [00:35:17.660](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2117s) case, in the heart of the so we have one more token, and then the next input would be everything
+- [00:35:25.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2125s) shifted again by one block. So in pre training, we could move over this blue one here, like I'm
+- [00:35:34.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2134s) showing you here by one position. And then we can have the next input input batch like this. So we
+- [00:35:39.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2139s) have in the heart, and the next input would be in the heart of the sorry, in the heart of and then
+- [00:35:46.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2146s) the heart of the and then heart of the city of the city stood and so forth. So we can always move
+- [00:35:53.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2153s) over by one position. But then you notice that we get these overlaps, right? So we have the heart
+- [00:36:00.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2160s) off here, and we have it here, too. So in this case, the LLM would essentially see a lot of
+- [00:36:06.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2166s) repeated tokens when you're pre training it. So in practice, when we prepare the inputs,
+- [00:36:12.700](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2172s) what we do is we shift this input window by the size of the input window. So this is also called a
+- [00:36:20.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2180s) stride. Sometimes some if you have worked with LL, sorry, with CNN's convolution networks, you
+- [00:36:26.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2186s) may be familiar with the strides when we talk about the convolutional kernels. Here, it's a
+- [00:36:33.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2193s) relatively similar context or concept. So here, if we have an input of size four, for one training
+- [00:36:40.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2200s) example, we would then move it over by four for the next one, so that we don't have an overlap for
+- [00:36:48.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2208s) the inputs. The targets, I'm not showing you the targets here, because it would be too cluttered.
+- [00:36:54.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2214s) But the targets are still shifted always by plus one, because you always want to predict the next
+- [00:36:59.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2219s) word. There are actually some LLMs on this one, actually is only one. It's called multi token
+- [00:37:07.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2227s) prediction something. So there was a paper recently by I think it was matter AI, who developed a
+- [00:37:13.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2233s) method to predict four tokens. But this is really like an experimental research paper. In practice,
+- [00:37:21.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2241s) if you look at all the popular LLMs, for example, ChatGPT, GPT-4, Llama-3, Phi-3,
+- [00:37:28.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2248s) Gemma, and so forth, and Gemini, they all do next word prediction. So it's it's a sense like the
+- [00:37:35.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2255s) targets are shifted by a position of one. And we will actually also see sampling function later
+- [00:37:41.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2261s) once we pre train the network. So then it will be a bit more clear how you get that next token in
+- [00:37:48.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2268s) case this was confusing. The last thing is, I wanted to briefly show you just how the data set
+- [00:37:56.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2276s) looks like I originally planned to go over this. But this ended up being too much material, because
+- [00:38:02.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2282s) I think we are already talking for half an hour just about this section. And there is also still
+- [00:38:08.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2288s) the architecture and the pre training weight loading and fine tuning to talk about. So I'm cutting
+- [00:38:13.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2293s) it short here. And I will just mention there is this function implemented, which will then
+- [00:38:18.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2298s) essentially produce the input batches for the model. So here in this case, these are the inputs. And
+- [00:38:26.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2306s) these are the targets. So the inputs are so the token IDs here, I mentioned I'm showing you the
+- [00:38:33.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2313s) words instead of token IDs, because it's more readable. What's the same concept here. So you
+- [00:38:38.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2318s) have an input. And then the target shifted by one position. So you can see the 367 here. And it's
+- [00:38:46.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2326s) located right here and then 285 2885 and so forth. So everything is shifted by one position. And you
+- [00:38:55.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2335s) can also see that there's no overlap between any of those. So in case you are wondering about that,
+- [00:39:02.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2342s) it's basically this moving over by one position, sorry, by by the size by four positions. And here,
+- [00:39:13.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2353s) we are using this max length of four. So we have only four per row. So one row is one training
+- [00:39:19.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2359s) example, and we have only four tokens per row, which is kind of small. And this is really just so
+- [00:39:24.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2364s) that I could make a figure where I can visualize that. In practice, when we are training a model,
+- [00:39:29.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2369s) like GPT two, it's usually something around 1024. So you have like 1000 tokens in one row instead
+- [00:39:38.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2378s) of just four. It's really just so that it's easier to visualize, right? Yeah, okay. And so this is
+- [00:39:46.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2386s) how the input data how the input data would look like. So we have mini batches similar to deep
+- [00:39:51.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2391s) learning, where in this case, we have 12345678, a batch size of eight. And each training example
+- [00:40:01.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2401s) consists of multiple tokens. And then the targets are really the same as the inputs except shifted
+- [00:40:08.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2408s) by one position. And yeah, so this isn't a nutshell how we prepare a data set for an LM. And we will
+- [00:40:17.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2417s) later train our LM on this data set. And just like as a warm up, optional exercise, maybe pause
+- [00:40:26.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2426s) this video at this point and prepare your own data set. So if you have some favorite texts, maybe
+- [00:40:31.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2431s) something you have written, or maybe some other public domain book you like, please feel free to
+- [00:40:38.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2438s) download it and put it into the folder where you have this notebook. And then you just run this code
+- [00:40:45.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2445s) instead of The Verdict here at the top run this code on your own favorite text. And then you can
+- [00:40:51.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2451s) actually also use this text in the later into later sections, basically. So yeah, it's just like a
+- [00:40:58.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2458s) small, maybe fun, optional thing to do.
+- [00:41:03.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2463s) Okay, so now after we cover the input part, how we tokenize texts, let's go to the next part, the LM
+- [00:41:11.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2471s) architecture. So here in this notebook, I want to talk about a bit of how an LM is structured. But
+- [00:41:19.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2479s) this is only on a big picture level. So there will be a lot of individual components. And this is a
+- [00:41:25.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2485s) three to four hour workshop, and not like a 3240 hour workshop. So in this case, yeah, we will be
+- [00:41:31.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2491s) focusing on the big pictures here. So here in this notebook, we will be talking about coding, LM
+- [00:41:36.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2496s) architecture, but the top down view, if you're interested in further details, you can check out my
+- [00:41:42.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2502s) GitHub repository here corresponding to my book where I have more notes and on every
+- [00:41:47.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2507s) individual component that we code. But yeah, for this video, let's focus on the bigger picture. So
+- [00:41:55.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2515s) suppose we have an LM like shown here, previously, we talked about taking input text, and then
+- [00:42:02.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2522s) tokenizing this input text into these individual token IDs. And inside the LM, they get then
+- [00:42:08.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2528s) processed by so called embedding layers that produce continuous valued vectors. And those go into
+- [00:42:14.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2534s) so called transformer blocks. And then there's an output layer, some post processing steps, and then
+- [00:42:19.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2539s) we get text back. So the goal, again, is to generate one word at a time with LM. And that's how
+- [00:42:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2546s) elements are also pre trained. So when you use something like ChatGPT, of course, it's more
+- [00:42:31.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2551s) sophisticated. So you will notice it can follow instructions. But typically, when we start
+- [00:42:37.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2557s) developing an LM and pre train it, it will require you to provide something like a starting text, a
+- [00:42:44.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2564s) starting context. For example, like this, every effort moves you. And then based on the starting
+- [00:42:49.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2569s) context, it will provide basically the next word in this case forward. There are a few more nuances
+- [00:42:55.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2575s) to that how this next word is generated. And we will get to that by the end of this notebook. So
+- [00:43:01.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2581s) here, it's more like the big picture, we have the LM. And inside there's something called a
+- [00:43:06.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2586s) transformer block that gets repeated a number of times. And yeah, that produces basically the
+- [00:43:12.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2592s) output text. And this is the same for all kinds of architectures. It's GPT, Google's gamma or
+- [00:43:18.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2598s) Gemma, Microsoft's phi mistral, meta AI slama, and so forth. So they all kind of rely on the same
+- [00:43:27.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2607s) underlying concept. And here's the architecture in a little bit more detail. And I know there is a
+- [00:43:33.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2613s) lot of technical jargon on this one, which we won't go over here. But you know, if you are familiar
+- [00:43:38.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2618s) with deep learning, some of these things might be familiar to you, for example, dropout or layer
+- [00:43:44.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2624s) norm, or these are residual connections, there's a output layer feed forward, which is basically a
+- [00:43:52.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2632s) mini layer, multi layer perceptron. And this consists of linear layers with nonlinear activations
+- [00:43:56.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2636s) and so forth. So again, this workshop is not the workshop to go into these details, I wish I could,
+- [00:44:02.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2642s) but due to time reasons, I have to only give you the big picture overview. And the takeaway here is I
+- [00:44:09.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2649s) would say that different LLMs are very similar to each other, even though they might be large and
+- [00:44:16.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2656s) much larger than others, they are still underlying the same concepts. So here on the left hand side,
+- [00:44:23.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2663s) GPT small is 124 million parameter LLM. Of course, the L in LLM stands for large, so it's small, large
+- [00:44:31.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2671s) language model. But there also is this variant called GPT two large, which is 1.5 billion
+- [00:44:38.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2678s) approximately. And so this is about more than 10 times larger. But the only difference really is
+- [00:44:43.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2683s) that this number of times the transformer block is repeated is now 36 instead of 12. And we have 20
+- [00:44:50.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2690s) heads instead of 12 heads in this masked multi head attention module. So if you're familiar with
+- [00:44:56.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2696s) convolutional networks and convolution networks, there's something called channels. And the heads
+- [00:45:01.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2701s) is essentially analogous to those channels. And there's also a detail where they use rotate rotary
+- [00:45:09.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2709s) embeddings. Sorry, not here. That's actually Llama. So here, we use absolute embeddings, and they have
+- [00:45:15.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2715s) a different embedding size. So when we have the token IDs, we go from token IDs to continuous
+- [00:45:21.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2721s) valued vectors. And in this case, each token ID is represented by a 768 dimensional vector. In the
+- [00:45:28.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2728s) large model, we have 1280 dimensions. So it's just making the embedding size larger. So each vector
+- [00:45:37.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2737s) representing one token is essentially larger. So here I have for comparison also a different
+- [00:45:43.500](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2743s) architecture Llama two, but even that one is very, very similar to GPT. So here in this case, what
+- [00:45:49.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2749s) they've done is they swapped layer norm with RMS norm, and they removed dropout. So dropout is not
+- [00:45:55.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2755s) very popular anymore in large language models. So most architectures don't use it anymore. And
+- [00:46:02.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2762s) yeah, other than that, they use the rotary embeddings position embeddings. So it's just a
+- [00:46:06.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2766s) different form of embedding the words, it's just like a cosine sine kind of wave form to rotate
+- [00:46:14.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2774s) embeddings to create some notion of position. But again, this would be a great topic for a different
+- [00:46:20.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2780s) video, maybe hopefully in the future. Another detail is they swap the activation functions. So
+- [00:46:26.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2786s) instead of Kalu, they use Silo or Silo. So they're just honestly, I would say minor implementation
+- [00:46:31.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2791s) details, but fundamentally, they use the same architecture really. So suppose we are interested
+- [00:46:39.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2799s) now in working with this hundred 24 million model here is just some, you know, hyper parameter
+- [00:46:44.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2804s) configuration to get this architecture I'm showing you here. So we don't need to really go over
+- [00:46:51.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2811s) those, but N layers is the number of times the transformer blocks get repeated. I could also have
+- [00:46:55.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2815s) called that N transformer blocks, maybe the number of heads here, embedding dimensions. So here, this
+- [00:47:02.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2822s) would be corresponding to these, right. And the context length is how many tokens you can provide
+- [00:47:11.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2831s) as input. So new LMS, they support up to 4000, 8000, sometimes even more tokens, but it
+- [00:47:18.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2838s) makes it also more memory intensive. So 1024 is actually quite a good number for experimentation.
+- [00:47:26.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2846s) And the vocabulary size, how many unique words are in the vocabulary. And this corresponds in our case
+- [00:47:32.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2852s) to the BPE tokenizer, which we implemented in the not implemented, but loaded in the previous
+- [00:47:39.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2859s) notebook. So when we loaded that somewhere here, we, yeah, we use the BPE tokenizer, which can
+- [00:47:45.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2865s) represent 50,257 words or tokens. Yeah, we disable dropout. It's not really needed. So honestly, it
+- [00:47:58.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2878s) just makes the architecture more complicated, but we can also enable it. So it doesn't really matter.
+- [00:48:02.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2882s) And QKV bias, it's implementation detail I did here because maybe I shouldn't discuss it. It's too
+- [00:48:09.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2889s) much detail here, but the masked multi-head attention layer uses linear layers. And it's usually
+- [00:48:17.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2897s) common to have a bias unit for the linear layers, but modern architectures don't use that anymore.
+- [00:48:22.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2902s) So in modern architectures, the linear layer is essentially just a simple matrix
+- [00:48:27.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2907s) multiplication, especially when it comes to the QKV matrices in an architecture. So it's basically
+- [00:48:36.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2916s) instead of applying this fine transformation, we have a linear transformation, a linear matrix
+- [00:48:42.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2922s) multiplication. However, the original researchers who implemented GPT, so the original GPT model,
+- [00:48:50.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2930s) they did use a bias unit for the QKV matrices, which is a bit weird, but it's maybe just what they
+- [00:48:58.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2938s) did. But then if we want to load these weights later, we have to match that. So in this case, I
+- [00:49:04.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2944s) have a toggle. So I can, you know, I can add these so we can later, oops, we can later load the
+- [00:49:11.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2951s) pre-trained weights. Now, this is just a big picture overview, of course. But there's one more
+- [00:49:18.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2958s) thing I wanted to talk about. And that is how the input output looks like. So if we have the input
+- [00:49:24.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2964s) text here, it gets tokenized, as we've talked about in the previous notebook. And then it goes
+- [00:49:29.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2969s) through the embedding layers, we have the transformer blocks and so forth of layer norm, and
+- [00:49:36.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2976s) then an output layer. And the output actually, unless we do some post processing, the output of
+- [00:49:42.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2982s) this output layer, because it's just like a matrix multiplication, a linear layer, how it looks like
+- [00:49:46.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2986s) is we get a big tensor here. So we have four words, one, two, three, four, four tokens in this
+- [00:49:53.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=2993s) case. So we have four rows, one, two, three, four. But each of the columns here, so we have actually
+- [00:50:02.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3002s) five 50,000 250, sorry, 50,257 columns. And the columns here, they correspond to the vocabulary.
+- [00:50:14.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3014s) So it's a bit abstract here, I couldn't, of course, show all the 50,000 dimensions. But we are
+- [00:50:21.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3021s) looking here for the highest value. So if the highest value in this whole thing, in the whole
+- [00:50:28.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3028s) row is the first value here, then this would be corresponding to token ID zero, the second position
+- [00:50:36.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3036s) would correspond to token ID one. So if I go back a bit, previous notebook, we had the vocabulary at
+- [00:50:42.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3042s) some point here. So first token ID would correspond to the first entry, the second token ID to the
+- [00:50:51.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3051s) second entry and so forth. And in the same way, each column corresponds to the token ID. So the
+- [00:50:58.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3058s) first token ID, second, and then the last token ID in the 50,257 dimensional. Yeah, vocabulary. So
+- [00:51:08.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3068s) this is really how you would implement the LLM. And yeah, I'm not showing you the implementation
+- [00:51:14.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3074s) details, because this would be a 10 hour lecture. But you know, I have them here in the
+- [00:51:19.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3079s) supplementary file. And if you want to, it's also described in my book and in the GitHub repository
+- [00:51:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3086s) corresponding to my book. So yeah, if you want to find more information, I have more notes there. So
+- [00:51:33.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3093s) here we are more focused on the big picture. So let's actually create some simple data set. So I
+- [00:51:40.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3100s) have just initialized the GPT model. And here I'm getting my BPE tokenizer that we talked about in
+- [00:51:47.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3107s) the previous notebook. And I have some two text inputs. Every effort moves you and every day holds
+- [00:51:53.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3113s) a and I want my LLM to complete these texts, essentially. So I'm creating a mini batch. So I'm
+- [00:52:02.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3122s) not using the data a lot from the previous section, just to keep it simple. I have a very simple
+- [00:52:06.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3126s) input. So the first training example are these four tokens and the second training example of those
+- [00:52:12.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3132s) four tokens. So this corresponds to text one. And this corresponds to text two here. Yeah, and let's
+- [00:52:20.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3140s) put this into the LLM and see what the results are. So you can see the output shape is now two times
+- [00:52:30.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3150s) four times 50,257. So this is the shape and this is the corresponding tensor. So where or what do
+- [00:52:40.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3160s) these numbers mean? So we have two input examples, right? So we have one, two, and this is why we have
+- [00:52:47.820](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3167s) this two here. And then each input example has four tokens. So we have 1234. That's why we have the
+- [00:52:55.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3175s) four tokens here. But each of these tokens is now represented by 50,257 dimensional vector. So here,
+- [00:53:05.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3185s) that's why this number comes from. So if I take one of those, so if I say take the first training
+- [00:53:13.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3193s) example, and then take the first token, this should give me a 50,257 dimensional vector. So this would
+- [00:53:24.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3204s) be the embedded token. So 50,257 dimensions, this would be the vector corresponding to the first
+- [00:53:32.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3212s) token, in this case, this one. And it's not necessarily just this one, because inside a GPT model,
+- [00:53:39.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3219s) there's this multi multi head mass detention mechanism, which also, which implements sorry, I
+- [00:53:47.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3227s) almost tipped my glass here, which implements like a concept that combines information from all the
+- [00:53:53.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3233s) tokens. But roughly, you can think of it as the token corresponding to the first first one here.
+- [00:54:01.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3241s) Okay, so how does it now result in the next word that we want to predict? Because now we have
+- [00:54:07.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3247s) essentially as the output for tokens. So for each training examples, we have four tokens that are
+- [00:54:12.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3252s) 50,257 dimensional, which is like, well, where does this large number come from? And why does it help
+- [00:54:20.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3260s) in generating the next word? Because like I told you before, elements are all about generating the
+- [00:54:26.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3266s) next next word. So how do we get from this multi dimensional concept to just the token, the text
+- [00:54:34.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3274s) token? So how do we get from this to this? And yeah, how it works is a bit complicated. But I think if
+- [00:54:43.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3283s) we go through it step by step, it should hopefully be a bit demystified. So again, taking it from the
+- [00:54:51.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3291s) left hand side slowly, in the last notebook, when we had some input text, "hello, I am a"
+- [00:54:58.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3298s) this is my input text, what we did is we tokenized it. So this is now token IDs. And then this goes
+- [00:55:05.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3305s) into the model. And then we get these four rows with 50,257 dimensions each. So this is what we
+- [00:55:13.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3313s) just had above. Now, we are only interested in the next word, we are not really interested in all
+- [00:55:21.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3321s) the four output tokens. Because like we talked about before, if I go back a bit, one second,
+- [00:55:35.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3335s) here, so what I showed you before is when we train or create an LM, it predicts the tokens
+- [00:55:42.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3342s) shifted by one, if blue, this is my input, the targets are shifted by one, right? So in this case,
+- [00:55:50.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3350s) the only if I have this input, the only new token will be the next one. Yeah, the sorry, the last
+- [00:55:55.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3355s) one, because these the heart of they're already contained in the input here, the heart of so we
+- [00:56:00.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3360s) are interested in the output, and then only in the last token of the output. So this means we are
+- [00:56:09.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3369s) only interested in the last row. In this case, if I have four rows, corresponding to my four
+- [00:56:14.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3374s) tokens, I'm only interested in my last row here, which corresponds to the new token. Now I mentioned
+- [00:56:22.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3382s) each row will be 50,257 dimensional. And these are the so called logits. These are just
+- [00:56:28.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3388s) unnormalized scores. Typically, we can it's not necessary for generation. But during training, we
+- [00:56:34.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3394s) normalize them to obtain probabilities. And these sum up to one. And what I do, then with these
+- [00:56:41.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3401s) probabilities is I look for the largest probability in this probability tensor. So again, I go from
+- [00:56:48.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3408s) token IDs, to token embeddings. And then based on the output for the token embeddings, the last
+- [00:56:56.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3416s) token, I look for the largest value. In this case, it's this value here. And this value
+- [00:57:02.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3422s) corresponds to position 257. I dotted out a few because otherwise it would be too long.
+- [00:57:09.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3429s) And so what I'm doing here is I'm looking for the largest value in the last token. And then I get a
+- [00:57:15.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3435s) token ID. And then I can use my tokenizer decode to decode this token ID back into a word or token
+- [00:57:24.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3444s) string. So in this case, hello, I am I am is my input. And then I get this a, which is the next
+- [00:57:31.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3451s) token. And I add this back to my input. And then I do another round where now the model gets
+- [00:57:38.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3458s) the original tokens plus a new token. And then again, it generates the next one, and so forth.
+- [00:57:44.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3464s) So this is how we get the M to generate always the next word. This is how we get
+- [00:57:49.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3469s) this text essentially that we start with this one, the blue one, we generate this a, and this a gets
+- [00:57:56.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3476s) added as input again. And then the next word is model. And we add this model here back
+- [00:58:02.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3482s) here, take this whole thing as input, generate the next one and so forth until we have the full text.
+- [00:58:08.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3488s) So it's really just generating one word at a time that we keep appending back as the input is
+- [00:58:14.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3494s) sometimes also called as teacher forcing, but I don't like this term. So it's basically just
+- [00:58:20.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3500s) adding the token back as the input. And here's the simple function without belts and whistles
+- [00:58:28.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3508s) to implement this concept. So we iterate over the number of tokens we want to generate. So let's
+- [00:58:34.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3514s) call this max new tokens. And then we get the indices. So here I am truncating them a bit,
+- [00:58:43.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3523s) because like I mentioned, LLMs can only support up to a certain context size, 1024,
+- [00:58:49.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3529s) in case I have more text than my LLM supports, I would truncate this. But this is actually for
+- [00:58:56.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3536s) our simple case, not necessary because we have a very small context. Okay. So what I do then is
+- [00:59:02.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3542s) I create these logits. The logits are these values here and just called logits. And I get
+- [00:59:10.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3550s) the last value here. The minus one is the last position. So the columns are the 50,000 dimensions
+- [00:59:18.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3558s) and here the dimensions, the rows are one, two, three, four. I'm getting the last one minus one
+- [00:59:25.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3565s) and index in a numpy and PyTorch is the last one. I apply my softmax function, which gives me these
+- [00:59:32.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3572s) probabilities here. And then I look for the largest probability. Specifically, I look for the
+- [00:59:39.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3579s) position where the largest probability is. So in this case this position 257. And this
+- [00:59:45.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3585s) will become then my new generated token ID. And then yeah, I concatenate the original,
+- [00:59:53.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3593s) originally here, the indices with this next token, essentially. And yeah, and this is essentially how
+- [01:00:02.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3602s) we generate one word or one token at a time. So here's the whole concept visualized again.
+- [01:00:08.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3608s) We have some input, generate the next token, append it back, generate the next token, append it back,
+- [01:00:16.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3616s) generate the next token and append it back. And yeah, this is how it works, how an LLM generates
+- [01:00:22.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3622s) one token at a time. And so for the exercise, I have not shown you how to use this function.
+- [01:00:29.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3629s) It shouldn't be too complicated. I hope I have some instructions. I would say maybe pause the video
+- [01:00:36.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3636s) and try it yourself. See if you can use the previous function that I showed you to generate
+- [01:00:43.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3643s) some text. So maybe pause the video here and I will then continue.
+- [01:00:50.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3650s) So yeah, for me, it's been a time sometimes since I made this notebook, but let's see if I can
+- [01:00:56.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3656s) do this off the top of my head. So the question is essentially how we use this
+- [01:01:03.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3663s) function that we implemented. So let's do some text, some example text,
+- [01:01:10.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3670s) and then we first encode it. So we get the token IDs. So we have the encoded text,
+- [01:01:17.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3677s) let's call it like this. And then we have the tokenizer and code text
+- [01:01:30.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3690s) should work. So we have three tokens in this case. And I mentioned here, so we need first
+- [01:01:36.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3696s) to apply the torch tensor to convert this into a tensor. Can do it right here.
+- [01:01:45.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3705s) So this is now a torch tensor. One thing is our network expects a batch size. So the way we coded
+- [01:01:52.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3712s) it is it wants a batch size. We can see that here that, where was it? Yeah, we have two batches. So
+- [01:02:00.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3720s) we have to add this batch dimension and pie torch. One way to do it is using the unsqueeze. Oops.
+- [01:02:08.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3728s) Yes, sorry. Oh, we use the unsqueeze, which adds a new dimension at the zero position. So
+- [01:02:15.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3735s) let's see how I can show it to you. So if I have
+- [01:02:20.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3740s) just a one dimensional tensors with three elements, I can actually also use
+- [01:02:25.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3745s) I think. And so if one dimension, I can then do encoded text and then do unsqueeze
+- [01:02:36.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3756s) and first dimension. So this should be now adding this new dimension. So now I have a two dimensional
+- [01:02:43.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3763s) tensors like this. And yeah, we have to maybe sign it to a variable. Let's call this batch input.
+- [01:02:58.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3778s) And then we can use our text generation function. So let's use that. Just copying it here.
+- [01:03:06.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3786s) So we can
+- [01:03:10.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3790s) just call it model. The indices are the batch inputs. Let's say we want to generate 10 new tokens
+- [01:03:16.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3796s) and context size or model has context size of 1024. Let's see what happens. Ah, not defined. Okay.
+- [01:03:28.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3808s) Let's try this again. Badge input is not defined. Did I not?
+- [01:03:33.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3813s) Execute this. Okay. Integer object is not subscriptable. Where did I make the mistake here?
+- [01:03:48.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3828s) Oh, I see. I have the end them here. So it should not have happened. So let's just print it out to
+- [01:03:53.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3833s) make sure it looks okay. The three tokens were the batch dimension. So this should work now.
+- [01:04:02.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3842s) Yep. So I have my generated output. Now this doesn't really tell me anything
+- [01:04:09.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3849s) because this is very abstract. So let's convert this back into token IDs. So we would use tokenizer
+- [01:04:18.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3858s) decode and then give it our token IDs. I think this will probably, this will
+- [01:04:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3866s) give you an arrow because I think what we need is we need to unsqueeze. So it's a bit tedious,
+- [01:04:34.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3874s) but we have to, sorry, we have to squeeze it now.
+- [01:04:41.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3881s) So this would be removing the batch dimension and we can actually also turn this into a list.
+- [01:04:46.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3886s) Not like this. I think maybe like this. No. Oh, item is a scalar. Thank you. I think this should
+- [01:04:56.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3896s) work. It's just like a tensor. Let's try it out. Let's do. Yep. So we have basically now the text
+- [01:05:12.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3912s) generated here and you can see this doesn't make any sense. So we can recognize, okay, these are
+- [01:05:17.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3917s) the first three tokens we gave us input. It makes sense, right? Some sample text, but the rest is
+- [01:05:23.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3923s) really gibberish. And this is because we have not pre-trained our model. So in the next notebook,
+- [01:05:28.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3928s) we will pre-train it, but this is why things don't make sense yet. It's normal, but now we have a way
+- [01:05:33.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3933s) yet to generate text. Let's clean this up a bit. So that's maybe
+- [01:05:38.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3938s) do it like this. Um, let's move this maybe here. So we have it all in one cell. Okay.
+- [01:05:45.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3945s) Okay. And if we want to decode this, we add this. So this would be, this would be the
+- [01:05:53.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3953s) maybe here. So we have it all in one cell. Okay. And if we want to decode this, we add
+- [01:06:14.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3974s) this. So this would be basically how we use the LM to generate new text. So let's try this again.
+- [01:06:22.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3982s) Um, it's just generate five, maybe not quite something is. Oh yeah.
+- [01:06:38.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=3998s) Yeah. And so in the next notebook, we will actually train this network and then it will
+- [01:06:42.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4002s) learn how to generate actually more comprehensible text. But in this notebook, basically we went over
+- [01:06:48.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4008s) the whole idea of how we hold architecture looks like, like the overall concept and how it's used
+- [01:06:54.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4014s) to generate one word at a time. I hope it was informative. I know I skipped over a lot of
+- [01:07:00.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4020s) architectural details due to time reasons, because I think this was another half hour segment. So I
+- [01:07:05.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4025s) didn't want to make this like a 20 hour course, but I hope, I hope this was useful. So next let's go
+- [01:07:12.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4032s) to the pre-training. Yeah. So now let's go from the architecture coding to the actual pre-training.
+- [01:07:20.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4040s) So notebook four, uh, pre-training and items. Again, this is a very abbreviated one, but I hope
+- [01:07:27.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4047s) it will teach you the basic fundamentals that go into the pre-training in case here, a very small
+- [01:07:34.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4054s) GPT two model. So for that to make it a bit faster, I will actually use a GPU.
+- [01:07:42.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4062s) Of course, everything also runs on a CPU. It will just be taking longer. So I recommend
+- [01:07:47.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4067s) you're using a GPU for this particular notebook. So you should be, it takes a few seconds to request
+- [01:07:54.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4074s) it, but then, uh, we don't have to, there we go. We don't have to reinstall anything. It should all
+- [01:08:00.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4080s) be still there and all, all our data should be still there. So it's just loading this.
+- [01:08:06.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4086s) And in particular, we will be talking about the pre-training and the training loop here.
+- [01:08:13.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4093s) And this will be using the architecture we implemented in the previous section. The only
+- [01:08:17.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4097s) modification I made is I made the context length a bit smaller. Originally it was some
+- [01:08:24.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4104s) thousand 24, but I thought, yeah this would take a bit longer. Actually let's,
+- [01:08:29.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4109s) let's why not do it? Let's just do it. Okay. Um, but yeah, if you're running on a CPU,
+- [01:08:35.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4115s) maybe use 256. Um, yeah. So something we already covered, we are initializing, initializing the
+- [01:08:43.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4123s) model like we've done before. And here's just a brief recap of what we have seen before.
+- [01:08:49.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4129s) So we, uh, had some text, we tokenized the text and got the tokens, put that into the GPT model.
+- [01:08:56.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4136s) And then it outputted this gigantic tensor. What we did then is be extracted the last value.
+- [01:09:02.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4142s) So the last row here and converted these then into the token IDs. So that's what we get here.
+- [01:09:10.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4150s) So this is for the whole text generated. And then we use the tokenizer to convert the token IDs back
+- [01:09:18.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4158s) into text, which gives us the actual text here. So this is what we have done before. And now we
+- [01:09:24.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4164s) are actually training the network because we've seen before, uh, it was not really giving us,
+- [01:09:29.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4169s) um, anything useful. What it was, it was just gibberish. And yeah, for that, we will be using
+- [01:09:36.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4176s) also to convenience functions, uh, text to token IDs and token IDs to text so that we don't have
+- [01:09:42.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4182s) to retype this every time. So these are two convenience functions that we can then plug
+- [01:09:47.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4187s) into our generate function that we used and implemented in the previous notebook.
+- [01:09:54.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4194s) So, so far, it's only just adding convenience functions. Let me actually execute this.
+- [01:10:07.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4207s) So this is essentially the solution that we implemented previously. There's nothing new
+- [01:10:11.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4211s) here except that we made this a little bit easier here or more convenient for reuse.
+- [01:10:16.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4216s) And you can still see it generates gibberish after the input. So we have to now train the
+- [01:10:22.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4222s) model to kind of improve it. So for that, we will be using the same data set that we used in the
+- [01:10:28.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4228s) first notebook, The Verdict is a short story. So let's just prepare it again here and read it in.
+- [01:10:35.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4235s) So it's again, the exactly same stuff we have seen in notebook two here. So nothing new. That's why
+- [01:10:41.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4241s) I'm going through it so fast. And the data loader, what it does is the data loader, um,
+- [01:10:47.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4247s) prepares the data set so that we have batches for training. So if we have this whole input text,
+- [01:10:55.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4255s) we would then tokenize this input text and then use the first chunk here as our
+- [01:11:02.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4262s) batch input. And then the second chunk is the second one and so forth. So this is how we would
+- [01:11:07.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4267s) prepare our batches. And of course, I'm only showing you that for a very small size, length
+- [01:11:14.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4274s) six, in our case, we would make the length a bit longer. We can use up to thousand 24, which is our
+- [01:11:21.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4281s) context size. So maybe going up one more time. So before we set the context here, and we can use
+- [01:11:30.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4290s) that same number for our data loader so that we can process more tokens at a time. Scroll down
+- [01:11:37.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4297s) again. Sorry, lots of scrolling here. So we can actually, when we implement the data loader here,
+- [01:11:43.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4303s) we can set the supported context size or length here as the max length, which will determine
+- [01:11:49.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4309s) the length of these text chunks. So one other thing I should mention is we also divide the
+- [01:11:55.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4315s) data set into a training data set and the validation data set. So here in this case,
+- [01:12:00.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4320s) we don't have a test data set, but we can also use a test data set, but to keep things simple,
+- [01:12:06.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4326s) it's on a training and validation set. And we can actually use a new data set as test set,
+- [01:12:10.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4330s) but we will be revisiting the model evaluation later in more detail in this fine tuning notebook
+- [01:12:17.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4337s) section. So I have multiple notebooks. I think two or three of them are on model evaluation. So we
+- [01:12:23.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4343s) will be revisiting this later. Okay, so let's now load the data set, reusing things we covered
+- [01:12:32.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4352s) already. So I don't have to go into too much detail here, but just yet to visualize
+- [01:12:37.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4357s) how the batches look like. So we have a batch size of two, so that two inputs in each batch
+- [01:12:43.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4363s) and the size, the text chunk size is thousand 24. And the same is true for the validation set. So
+- [01:12:52.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4372s) this is, oh, actually, the problem is with 1024 is that the data set is too small. And so
+- [01:13:00.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4380s) because we only have so few tokens, if we use two batches, we use all the batches up for the
+- [01:13:05.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4385s) training set, and we don't have validation tokens. And this, now I remember, this is why I said it to
+- [01:13:11.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4391s) 256 here, but I can also actually do this. I could do this also in the data loader.
+- [01:13:21.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4401s) Let's go here. I could overwrite it here, just here, 256, up to you, really.
+- [01:13:26.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4406s) Up to you, really. And the stride should be similar.
+- [01:13:35.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4415s) Okay. Yeah, that looks better. So we can see we have 123456789 batches in the training set, set,
+- [01:13:49.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4429s) and one batch for validation. It's a very, very small data set, right? So in reality, we would
+- [01:13:56.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4436s) train the LLM on trillions of tokens, but yeah, this would take quite a long time. So we are only
+- [01:14:02.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4442s) using this relatively small short story, which should train in a few seconds on a GPU, because
+- [01:14:08.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4448s) I don't want to bore you here too much by waiting for the training to finish. So you have to count
+- [01:14:16.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4456s) the number of tokens. We have 4,000 training tokens, 4,600 and 512 validation tokens. So in
+- [01:14:23.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4463s) total we have 5,120 tokens. And before training, it's always a good idea also to calculate the
+- [01:14:30.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4470s) initial loss. So I'm not going to go over the calculation for the loss, but it's essentially a
+- [01:14:37.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4477s) concept. The higher the loss, the worse we want to minimize the loss essentially. So here I have a
+- [01:14:44.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4484s) convenience function, calculate loss loader, which will calculate the loss based on the whole
+- [01:14:50.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4490s) training set or the whole validation set. So here we have an initial loss of 10.9, which is really
+- [01:14:58.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4498s) bad actually. So we want this loss to go towards zero when we are training the model. So the model
+- [01:15:04.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4504s) training is very similar to how we train deep neural networks in general. So we would iterate
+- [01:15:11.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4511s) over the training epochs and then we would iterate for each epoch over the batches in that epoch.
+- [01:15:17.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4517s) We would reset the gradients from the previous batch iteration, calculate the loss,
+- [01:15:24.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4524s) do back propagation to calculate the loss gradients, and then we use the loss gradients to
+- [01:15:30.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4530s) update the model weights. And this is essentially number six. That's the step where we update the
+- [01:15:36.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4536s) weights. And that is how essentially the model learns. And the model will learn to minimize the
+- [01:15:42.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4542s) loss based on these loss gradients. Essentially it's the negative gradients. So I'm just saying
+- [01:15:47.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4547s) gradients for simplicity, because that's what people use, but we take a step into the opposite
+- [01:15:52.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4552s) direction of the gradients to minimize that loss. Otherwise we would be maximizing it.
+- [01:15:58.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4558s) And then you are usually, it's a good idea to print out the intermediate values. So we can see
+- [01:16:02.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4562s) if our model makes progress during training, because if it doesn't, then it's also always a
+- [01:16:06.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4566s) good idea to maybe stop the training and change some hyper parameters and see if we can fix that.
+- [01:16:12.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4572s) And then at the end, I also find it useful to print out some generated text so that based on
+- [01:16:19.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4579s) the generated text, we can see how well the model performs. So my training function looks like as
+- [01:16:26.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4586s) follows. Basically what I've shown you in the picture is encoded here. So we have a function
+- [01:16:33.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4593s) that accepts the model, the training order, validation order, and so forth. And yeah,
+- [01:16:39.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4599s) here I'm iterating over the epochs. For each epoch, I put the model into training mode.
+- [01:16:44.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4604s) And then I iterate over the training order here. So here I calculate the loss batch. So basically
+- [01:16:52.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4612s) the loss for a single batch in the training set. Then I calculate the gradients, the loss gradients,
+- [01:17:01.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4621s) update the model weights. And also for visualization purposes, I'm counting the
+- [01:17:06.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4626s) number of tokens I've already seen. And this is really here just for tracking. So here I'm just
+- [01:17:14.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4634s) collecting the data so that we can actually plot the training and validation losses after
+- [01:17:20.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4640s) it has finished. And then also after each, after each epoch, I'm printing out some sample text
+- [01:17:27.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4647s) that the model generates so we can see visually if the model makes progress or not. So let's
+- [01:17:33.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4653s) actually try this out. So here I'm setting my random seats. It should be reproducible.
+- [01:17:42.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4662s) I have my model and I'm putting the model onto device. So device can be a CPU or GPU. If I go
+- [01:17:51.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4671s) up here again, I defined this. I think I skipped over it before. And so if you are running this on
+- [01:17:57.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4677s) a GPU here on your own computer, this will, if it's an Nvidia compatible GPU, this will automatically
+- [01:18:05.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4685s) run the code on the GPU and otherwise the CPU. So you don't have to do anything here. It will
+- [01:18:09.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4689s) automatically take care of this. So it puts the model on the target device, either CPU or GPU.
+- [01:18:18.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4698s) And we initialize also an optimizer. So in this case, we use Adam W, which is Adam with
+- [01:18:24.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4704s) weight decay, which helps a bit with overfitting. It's not a bad idea. Um, because especially
+- [01:18:31.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4711s) because we have such a small data set also in reality, usually I could have maybe used a bigger
+- [01:18:37.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4717s) data set, but in reality, usually we only train LLMs on for one epoch. So only one
+- [01:18:43.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4723s) iteration over the data set, but here, because it's such a small data set, I use 10 epochs to
+- [01:18:51.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4731s) show some progress basically. But if you have a larger data set, so remember the exercise from
+- [01:18:55.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4735s) notebook two, if your data set is larger, you probably can reduce them of epochs here.
+- [01:19:02.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4742s) Yeah. Okay. So let's actually run this and see what the results are.
+- [01:19:09.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4749s) So by the way, there are a few more settings here. There is the evil frequency. That's basically how
+- [01:19:15.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4755s) often the loss is calculated for the validation set. And, uh, yeah. So it's essentially,
+- [01:19:22.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4762s) we look this up again, evil eater. Um, Oh, sorry. This is actually in the function. I was hiding
+- [01:19:30.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4770s) from you. This is essentially for let me see evil eater. Let's see. This is for the
+- [01:19:40.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4780s) evaluate model function, which I have not shown you. I've hidden away some of the functions
+- [01:19:44.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4784s) because I don't want to make this video too long, but there is,
+- [01:19:54.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4794s) there is this evil eater, which means that it is only using five iterations from the training
+- [01:19:59.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4799s) lot for the loss calculation for evaluation. Cause if you have a large data set and you calculate
+- [01:20:04.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4804s) the loss on the whole training set, all the batches, this can be a very, very expensive
+- [01:20:10.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4810s) computation. So here we are just approximating the training loss by only iterating over it as
+- [01:20:16.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4816s) a fixed number of times. And in this case, this fixed number of times is by default.
+- [01:20:23.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4823s) Five, if you paid attention, our validation set only has one entry. So in this case, our validation
+- [01:20:29.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4829s) set losses calculated by only one validation batch. Okay. So here we can now see what happens
+- [01:20:38.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4838s) during training. We can see that the training loss goes down, which is nice. So it goes down
+- [01:20:43.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4843s) from nine to one. Um, the validation loss also goes down. It starts at 10 and it goes to six,
+- [01:20:50.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4850s) but then it really stops improving. And that it's really because yeah, because the model is
+- [01:20:56.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4856s) overfitting. It's a very small data set. You can see training us as much lower than the validation
+- [01:21:02.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4862s) loss. It's because we really, we train for 10 epochs. If we would train for fewer epochs,
+- [01:21:07.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4867s) we would see less overfitting. But what we can see is that the model learns how to generate
+- [01:21:13.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4873s) coherent text. So in the beginning, we have some really nonsensical text that's generated here.
+- [01:21:19.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4879s) And then once we go further, we can see that the LLM becomes more coherent. So we can see, um,
+- [01:21:26.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4886s) at the end, it is actually quite coherent text. Actually, let's just search for this in the data
+- [01:21:33.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4893s) set here. Now we can't find this one, but it's almost the same. You can see, yes, quite insensible
+- [01:21:42.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4902s) to the irony, uh, here. Oops. It's quite insensible to the fact. So it is kind of like memorizing to
+- [01:21:51.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4911s) some extent. It's not too bad, but in practice also, there are more sophisticated generate
+- [01:21:57.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4917s) functions. I'm not covering it here in this workshop, but in my book, for
+- [01:22:01.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4921s) example, I talk also about different methods for preventing this memorization during generation.
+- [01:22:07.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4927s) So in practice, even if you have something like that in practice, it's not too bad because you
+- [01:22:12.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4932s) would use something like top case sampling, for example, or a temperature scaling. Um, yeah. So
+- [01:22:20.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4940s) this was, was the model training. It looks quite okay. Let's just save the model so we can, uh,
+- [01:22:26.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4946s) instruction fine tune it later. And let's also in addition, visualize the losses. So I just showed
+- [01:22:32.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4952s) you showed you before, like looking at the text and here I'm looking at the losses.
+- [01:22:39.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4959s) It's quite interesting. Um, I have maybe changed something in the notebook because I haven't
+- [01:22:45.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4965s) seen this peak before when I ran the notebook. So some of the things I've done while I was
+- [01:22:52.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4972s) explaining must have affected this. So there is some peak here now, but you can still see, um,
+- [01:22:57.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4977s) after this peak, the loss decreases. And we can also see the validation was, yeah, it goes
+- [01:23:03.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4983s) up quite a lot. And then it converges back down. It's quite interesting to see that I, I must have
+- [01:23:07.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4987s) changed something somewhere. Um, yeah. And so this would be the model training. So what we have
+- [01:23:14.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=4994s) accomplished so far is that the model can generate text and I'm here. So just a small exercise, um,
+- [01:23:22.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5002s) try to use the text, generate simple function we used before to just, just generate some text that
+- [01:23:29.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5009s) is not from the book. So yeah, maybe pause the video and implement this exercise one. And then
+- [01:23:35.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5015s) I will show you the solution. Okay. So how I would approach this is I would just cause I'm lazy.
+- [01:23:45.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5025s) I did already a lot of coding in my day to day. I will just copy and paste this.
+- [01:23:52.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5032s) And would just insert it here and hope that it works.
+- [01:23:58.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5038s) So just making sure I'm not reloading the model. I don't need this. Um, so let's,
+- [01:24:03.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5043s) let's just reuse this context here and see if our trained model is now better than before.
+- [01:24:09.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5049s) Oops. All tensors must be on the same device. Oh, that is actually an interesting one.
+- [01:24:14.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5054s) So what we have to make sure is that the input, uh, tensors are on the same device as the model.
+- [01:24:21.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5061s) So what we forgot here is we have to do a two device here too.
+- [01:24:27.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5067s) Okay. So yeah, it is generating more coherent text. Let's try something else.
+- [01:24:41.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5081s) So it is kind of working. It's not perfect, but it is, uh, generating some somewhat coherent text.
+- [01:24:47.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5087s) Um, so the next section, we will actually use pre-trained weights.
+- [01:24:51.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5091s) I will show you how to load pre-trained weights, and then this will improve because yeah,
+- [01:24:55.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5095s) you have to keep in mind our model has only learned from this one short story, which is,
+- [01:25:01.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5101s) uh, in, in fact, really short. Um, yeah. So maybe as a second exercise,
+- [01:25:08.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5108s) try to load this model now in a new session, because this is also,
+- [01:25:12.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5112s) I think relevant because here we are training a model and we want to reuse that later.
+- [01:25:16.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5116s) How do we actually do that? So maybe pause that video and create a new notebook and see if you
+- [01:25:22.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5122s) can lot this model. So again, how I would do this, I would make a new file. Let's call this, um,
+- [01:25:31.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5131s) exercise to a Python notebook.
+- [01:25:40.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5140s) Where is it? And then let me just try the naive thing. So I would say, uh,
+- [01:25:48.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5148s) where did I save my model? I saved it as model PTH. So I can do, um,
+- [01:25:56.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5156s) port torch, torch load, and then I can try to load this file. I can actually
+- [01:26:09.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5169s) copy the path.
+- [01:26:16.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5176s) So this would be loading my weights.
+- [01:26:26.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5186s) And we have to also define the model. So what we have to do is we have to lot the model.
+- [01:26:33.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5193s) So what I need is essentially this part.
+- [01:26:40.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5200s) And for this part, I need the model itself. Where did I import it? So
+- [01:26:46.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5206s) instead of scrolling, I could also look in this file.
+- [01:26:56.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5216s) GPT model, I think. Great. Yep. GPT model. So
+- [01:27:02.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5222s) `from supplementary import GPTModel`. And then let me copy...Let me copy this configuration.
+- [01:27:14.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5234s) Okay. And then this should be fine. I have my weights loaded here. I have the model loaded here.
+- [01:27:20.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5240s) Oops. Device is not defined. You can just say device, uh, could I, in this case,
+- [01:27:31.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5251s) printing the architecture, which is nice, but we don't want to bloat this notebook.
+- [01:27:35.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5255s) So I have my model now, actually a good sanity check. So let's say I want to load
+- [01:27:40.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5260s) the model.
+- [01:27:45.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5265s) Nice, but we don't want to bloat this notebook. So I have my model now, actually a good sanity
+- [01:27:50.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5270s) check would be to copy the text. Where is it to copy this section here
+- [01:28:09.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5289s) and see if it can generate coherent texts. Oops. All tensors are the same device. I think that's
+- [01:28:14.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5294s) the same problem we had before to Cuda. So right now we are only using the randomly
+- [01:28:28.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5308s) initialized model. So this is not generating anything useful yet. So what we have to do now
+- [01:28:32.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5312s) is we have to take these weights. Um, I think it's model from state dict. I think this would
+- [01:28:43.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5323s) give us the, I think it should be like this one load state dict. And then we will give it the
+- [01:28:48.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5328s) weight. I think this should work. All keys match. That looks good. And let's try it again now.
+- [01:29:01.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5341s) Yes. So this is now using our pre-trained model essentially. Okay. So we completed exercise.
+- [01:29:13.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5353s) Two and optionally exercise three would be training your training, the LM on your favorite
+- [01:29:19.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5359s) texts. And this would then conclude the pre-training section. Next, I will actually show you how we can
+- [01:29:25.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5365s) load weights that are better than the weights we loaded here so that the LM can actually generate
+- [01:29:30.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5370s) something that is more, even more comprehensible. So now we have a model that can generate some text,
+- [01:29:40.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5380s) but it's not great. And that is because we are only trained it on a very small data set for like
+- [01:29:46.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5386s) a minute or so. And so the next notebook, we are going to load the pre-trained weights from open
+- [01:29:52.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5392s) AI. So here in this notebook, we are loading them of how open AI originally trained the GPT two
+- [01:30:00.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5400s) model. And yeah, back then they spent months and months on training this model today with modern
+- [01:30:06.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5406s) hardware. You can maybe train it in a week or so, but yeah, this is a much more capable model
+- [01:30:11.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5411s) because it has been trained on, I think it was like about 500 billion tokens. And yeah, in this
+- [01:30:17.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5417s) notebook, we are going to lot the weights from that training run, the original one into the
+- [01:30:22.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5422s) architecture we just coded. And yeah, for that, we need to use TensorFlow. And that's because back
+- [01:30:29.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5429s) then, yeah, open AI use TensorFlow and the code will be still PyTorch. It's just required here
+- [01:30:36.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5436s) for loading the weights from the original files that are provided by open AI. So I'm imparting
+- [01:30:43.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5443s) here this download and load GPT two model. And this is a function I implemented and tucked away
+- [01:30:50.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5450s) a bit because it's not super interesting. It's essentially just downloading the relative, sorry,
+- [01:30:55.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5455s) the relevant files from the open AI websites, this open AI public prop core, so-and-so website.
+- [01:31:02.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5462s) And this contains a bunch of files for each model that we will use to load the model. Yeah.
+- [01:31:08.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5468s) And so essentially, it's just loading the parameters and the settings. So yeah, so this
+- [01:31:16.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5476s) is essentially, I would say not super interesting to go also actually amusing this one settings and
+- [01:31:22.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5482s) premises. So it's just loading those. And if you are running this in the Studio, it will actually
+- [01:31:31.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5491s) be quite fast. So this will be only taking a few seconds because I already downloaded these files
+- [01:31:37.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5497s) for you. If you're running this on a laptop, it might take a few minutes, but shouldn't be too bad
+- [01:31:42.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5502s) because it's a relatively small model. Um, yeah. So using this function, uh, we implement or
+- [01:31:48.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5508s) we download this settings and params that are prepared with the function implemented there.
+- [01:31:53.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5513s) And just to show you briefly what those variables are. So settings are containing information
+- [01:32:02.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5522s) about the architecture. So this is similar to what we had. If I go back, maybe to let's go to
+- [01:32:08.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5528s) notebook four it's similar to this structure here. The naming conventions are slightly different.
+- [01:32:14.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5534s) So I call it context length instead of what is it? And CTX thought it's just a bit more
+- [01:32:22.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5542s) readable, but otherwise number of heads and number of layers. It's basically the same
+- [01:32:28.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5548s) convention that we used here. Okay. Um, so this is where these names come from.
+- [01:32:34.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5554s) So it's just like the general settings, uh, the params here, they do contain the
+- [01:32:43.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5563s) contents of the weights, the tensors. So this is a dictionary that contains the
+- [01:32:50.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5570s) transformer blocks. And this, I think is a bias unit for the output embeddings. Oh, sorry.
+- [01:33:00.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5580s) These are, I think the variables for the layer norm, the final layer norm. This is the position
+- [01:33:05.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5585s) embedding layer and the word, uh, word embedding layer. So the first token embedding
+- [01:33:11.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5591s) layer TE for token embedding and PE for positional embedding. So they would correspond to if I
+- [01:33:17.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5597s) go to the architecture here let's see, they would correspond to this, uh, for WTE would
+- [01:33:27.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5607s) correspond to this, this one and WP would correspond to this layer. And then the G and B, I think they
+- [01:33:34.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5614s) correspond to this final layer. No, it's been a while since I wrote this code, but yeah, the,
+- [01:33:40.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5620s) the way you can tell if you do the snapping correctly is if you lot the weights and you make
+- [01:33:45.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5625s) a mistake, the model will not be able to generate anything useful. So a good sanity check is really
+- [01:33:51.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5631s) just, yeah, loading the weights, seeing if the model generates coherent text. And if it does,
+- [01:33:55.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5635s) it's usually meaning that you did this mapping correctly, because yeah, the model is very,
+- [01:34:00.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5640s) very sensitive to the correct numbers there. And we can actually take a look at some of these,
+- [01:34:05.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5645s) um, contents. So let's maybe dive into the blocks. So the transformer blocks here,
+- [01:34:11.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5651s) that should be a list. Let's see. Oh, sorry. I wanted to say length params. So there's a length.
+- [01:34:20.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5660s) Oh, it's five or so five content. Sorry. I wanted to take a look at the blocks actually.
+- [01:34:25.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5665s) Yeah. Speaking and typing is for me somehow challenging. So there are 12 elements because
+- [01:34:30.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5670s) we have 12 transformer blocks. So if we take a look at the first transformer block here,
+- [01:34:38.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5678s) index zero, let's see how that looks like. It's actually a dictionary, I think. So let's do keys.
+- [01:34:44.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5684s) So this contains the attention weights. Uh, there are two layer norms and this MLP,
+- [01:34:51.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5691s) which stands for feed forward. Like it's a multi-layer perceptron feed forward type. So
+- [01:34:58.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5698s) the first layer norm, the second layer norm, and then this MLP is this feed forward part,
+- [01:35:05.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5705s) which itself consists of two fully connected layers. So, uh, I think I have here a better
+- [01:35:12.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5712s) figure. So you have one linear layer and another linear layer and an activation function in between,
+- [01:35:17.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5717s) but activation functions don't have any parameters. So we only have basic parameters of the linear
+- [01:35:22.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5722s) layers here. Um, so let's take a look maybe at one of those. So I do MLP here and then maybe
+- [01:35:31.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5731s) keys again. So right now I'm basically looking at the two linear layers in the first transformer
+- [01:35:42.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5742s) block. So linear one and linear two, they have a bit of a weird naming convention, but yeah,
+- [01:35:48.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5748s) that's basically how they named them back then. And let's just maybe look at this one.
+- [01:35:54.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5754s) Oops. And I think this is also a dictionary. So let's see.
+- [01:36:05.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5765s) So in this has both the bias and the weight matrix. So these are the weights and this is
+- [01:36:11.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5771s) the bias vector. So we can actually take a look at the weights. So these are the weights, um,
+- [01:36:20.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5780s) and they are in shape or dimension 768 times 3072. So the number comes from this embedding here,
+- [01:36:31.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5791s) the embedding size, and then it's projected four times larger. Um, it's maybe hard to see here
+- [01:36:38.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5798s) because we haven't coded the whole LLM because I was trying to avoid this because it would be
+- [01:36:43.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5803s) otherwise too long. But I think I should have it here somewhere. Transformer block
+- [01:36:51.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5811s) feed forward. Yeah. So you can see the embedding size 768 is projected up by four. So if I have
+- [01:36:59.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5819s) four times 768, I should get this 3000. What was it? 72 here. So that's where these numbers come
+- [01:37:07.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5827s) from. So now my challenge is basically on my task or my problem is how do I get these weights into
+- [01:37:15.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5835s) my model? So how do I really get those into my architecture that we coded? So yeah, I actually
+- [01:37:24.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5844s) wrote a function for that too. So let's first lot the model again, like we've done previously.
+- [01:37:30.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5850s) So this is the model we coded and I have different conflicts here. So this would be the one on 24
+- [01:37:37.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5857s) million model that we just loaded. So if we take this one, so the mapping here, if we take this one,
+- [01:37:44.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5864s) we initialize the GPT model right here with, with a 124 million size. So the way why it looks so
+- [01:37:55.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5875s) complicated is yeah, it allows you basically to swap the model out. You can use, for example,
+- [01:38:03.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5883s) the larger model here, if you want to. Okay. Um, we also have to enable. So this was the config
+- [01:38:10.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5890s) we used previously. Let's say we use the smaller 256 context length as we did for the
+- [01:38:17.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5897s) small data set. We would have to increase this because the original model was trained with that
+- [01:38:24.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5904s) context size. And this is to make the positional embeddings to match. And I think I mentioned
+- [01:38:29.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5909s) this before, but originally the researchers also used bias vectors for the QKV matrices.
+- [01:38:37.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5917s) It's really not necessary and not recommended, but they did it back then. And if we want this
+- [01:38:41.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5921s) model to work well, we have to exactly match what they've done. So if we want to lot the weights
+- [01:38:46.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5926s) correctly, so that's why I'm also setting these here. And yeah, then I'm initializing this model
+- [01:38:54.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5934s) and have a small utility function. So this function is really just making sure the shape
+- [01:39:00.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5940s) of the left tensor is the same as the right. And so if I give it to tensors and then it will convert
+- [01:39:06.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5946s) the tensor into a torch perimeter, so call touch tensor and then touch parameter to convert this
+- [01:39:12.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5952s) basically. And then it's really this is like a tedious part I've already done, but then it's
+- [01:39:18.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5958s) really like a brute force finding out what does, uh, the name they provide, like C projection,
+- [01:39:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5966s) what does it correspond to? Is this the first or the second linear layer? It's a bit tricky,
+- [01:39:31.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5971s) but actually you can do it by trial and error because you know what the dimensions are.
+- [01:39:37.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5977s) So, and you will also see if you do a mistake here, the model won't produce anything useful,
+- [01:39:43.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5983s) but yeah, I've already done all the hard work here, so don't worry about it.
+- [01:39:46.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5986s) But yeah, so this is essentially a utility function that lots, the tensor flow weights into
+- [01:39:52.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5992s) pi torch tensors, which then are used by our model. So I'm, I have a, this utility function
+- [01:39:59.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=5999s) here that I'm calling that really uses this mapping to Lord everything into our own model.
+- [01:40:06.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6006s) So it's a brute force thing where we have... So here I'm iterating over
+- [01:40:15.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6015s) the transformer blocks. And if you take a look, let's not look at the attention because we haven't
+- [01:40:21.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6021s) covered this really, but let's look at the fully the fully connected layers, the linear layers.
+- [01:40:26.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6026s) So here I'm in transformer block B and, uh, I'm assigning here in this attention, uh, part
+- [01:40:38.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6038s) the left one, sorry, to the right one. So basically I'm taking the open eye weight
+- [01:40:45.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6045s) and overriding it with our own weight, basically. Also, sorry, the other way around,
+- [01:40:50.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6050s) I'm taking my own weight and I overwrite it with the open eye weight. And I do this with every
+- [01:40:56.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6056s) single weight here. So I'm for each single weight, I'm overwriting
+- [01:41:03.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6063s) my randomly initialized parameters with the open AI one. It looks very tedious,
+- [01:41:08.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6068s) yeah, but if you do this for all the weights then the model should be initialized with
+- [01:41:13.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6073s) the open AI pre-trained weights. It took me a couple of hours at least to figure out the
+- [01:41:18.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6078s) right mapping. It's not a fun exercise, but you know, once you have done it once, you never have
+- [01:41:23.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6083s) to do it again for this model at least. And now we will be ready to use the model. So now we have
+- [01:41:30.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6090s) the pre-trained model and I'm using the same function we used before this generate text simple,
+- [01:41:36.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6096s) giving it now the model with a lot of weights and I'm giving it the same input again. And
+- [01:41:42.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6102s) let's see what it produces. So, yeah, so it produces more coherent text or not coherent
+- [01:41:51.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6111s) necessarily, but you have more texts that matches what we've provided here.
+- [01:41:58.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6118s) If I maybe modify this a bit moves you forward. Oh, it's kind of like the same.
+- [01:42:04.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6124s) Okay. Every effort moves you forward. Then you move forward. The first step is we can actually
+- [01:42:10.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6130s) may extend this a bit. Okay. It's very repetitive and this has also something to do with the fact
+- [01:42:21.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6141s) that this is still a very small, uh, model. Okay. It's kind of repetitive. It's kind of repetitive.
+- [01:42:30.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6150s) So as an exercise for you, I encourage you to try a larger model and see if this can actually
+- [01:42:37.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6157s) improve the quality. So maybe pause this video at this point and see if you can modify the section
+- [01:42:43.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6163s) above here and use a larger model and see what you get. Okay. So let's maybe use the
+- [01:42:52.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6172s) one next larger model. Let's use this one.
+- [01:43:01.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6181s) So I should also make sure actually, I don't know the larger model here.
+- [01:43:11.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6191s) It shouldn't be too long, but yeah, it's 1.4, two gigabytes.
+- [01:43:22.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6202s) Maybe should have saved them here for you. So you don't have to do this, but yeah, it's all good. I
+- [01:43:26.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6206s) think. Yeah. It's sometimes tricky to plan a very long, you know, coding session. So I think when
+- [01:43:33.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6213s) I'm finished with this, it's probably going to be three or four hours. And, you know, ideally in an
+- [01:43:38.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6218s) ideal world, I would probably go back and polish it up a bit and then redo it. But you know, uh,
+- [01:43:43.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6223s) there's only a day only has so many hours. Okay. So it's downloaded now
+- [01:43:50.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6230s) and let's go here to this part. Sorry. Um, that was a, uh, lost all of you, but so here I have the
+- [01:44:02.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6242s) 355 that I'm loading now. So this will be the randomly initialized model. We already initialized
+- [01:44:11.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6251s) these parts. We don't have to do anything here. So let's go ahead and do this. So let's do this.
+- [01:44:19.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6259s) And here though, uh, yeah, we need this basically. So we will need to execute this,
+- [01:44:25.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6265s) which will be loading the pre-trained weights similar to before into our model.
+- [01:44:30.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6270s) So it was pretty fast actually. And now let's see if this will look any better.
+- [01:44:37.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6277s) Well, it's somewhat better. Every effort moves you forward, but you must be careful. You must
+- [01:44:42.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6282s) not let your guard down. You must not let your guard down. It's a bit repetitive and, um,
+- [01:44:46.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6286s) that's like, okay, that's sorry about our every effort. So it is a bit it's not great. It's
+- [01:44:52.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6292s) a bit repetitive because we are still working with a smaller model. If you should use this one or
+- [01:44:58.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6298s) it should happen to use this one, you will see it will be much better results. But yeah, we don't,
+- [01:45:03.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6303s) I would say have that much time here to download the weights. So I don't want to bore you. I can
+- [01:45:08.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6308s) leave it as an exercise. So yeah, I personally like doing from scratch stuff a little bit.
+- [01:45:14.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6314s) Like doing from scratch stuff a lot because yeah, it's fun for me, but it takes a long time. So for
+- [01:45:19.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6319s) this workshop, for the remainder, I'm actually going to use a library called lit GPT so that we
+- [01:45:25.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6325s) can make some progress here. Um, so lit GPT is kind of based on the same concepts that I've shown
+- [01:45:30.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6330s) you before. Um, it's library helped developing it's more sophisticated though. It's, um,
+- [01:45:36.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6336s) yeah, it's implementing some more optimized, optimized, optimized code and also supports a
+- [01:45:41.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6341s) lot of other LLMs besides on GPT, but I can maybe briefly show you how it looks like.
+- [01:45:47.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6347s) So here in lit GPT, basically there is this model here, model pie file. And for this one,
+- [01:45:54.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6354s) you can see it's also a GPT model. So all the other models like Llama, phi, Gemma,
+- [01:45:59.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6359s) they are derived from that. So here, this is implementing the base model. But then when you
+- [01:46:05.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6365s) look at the config, that's where you would basically set the different settings. For example,
+- [01:46:12.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6372s) see stable LM, uh, you would then set the different embedding sizes, number of heads.
+- [01:46:20.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6380s) Some other LLMs have different multi-layer perceptron parts. Um, let's see if we can go
+- [01:46:27.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6387s) to Phi-3 recent one. So this has also some other modifications. Um, for example,
+- [01:46:34.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6394s) you have the number of layers and different things that you have to tweak, but fundamentally,
+- [01:46:40.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6400s) it's not that different from what you would see when you implement you know, like
+- [01:46:47.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6407s) GPT type models. It's essentially all based on the same architecture.
+- [01:46:53.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6413s) For example, here, mixed role is a mixture of experts. It's slightly different,
+- [01:46:56.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6416s) but still you have the concept of, uh, block sizes, number of layers, and so forth. There's
+- [01:47:02.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6422s) something called inquiry groups, which is multi query attention. It's essentially
+- [01:47:08.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6428s) just a small modification where you, instead of having one value key query connection,
+- [01:47:15.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6435s) you have for each query, you share the key and values basically. So it's essentially just
+- [01:47:21.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6441s) like little tweaks, but nothing fundamentally different. So here in this notebook,
+- [01:47:26.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6446s) I wanted to just briefly show you how you can use the GPT to use more sophisticated
+- [01:47:32.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6452s) LMS other than GPT two. So there are multiple commands. There's a command line interface,
+- [01:47:36.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6456s) `litgpt download | chat | evaluate | finetune | pre-train | serve`. And for here,
+- [01:47:42.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6462s) for this notebook here, we will be just looking at downloading and using the model. For example,
+- [01:47:47.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6467s) `litgpt download` and `chat`. Um, yeah, you can install it via PIP install LGBT. If you are
+- [01:47:53.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6473s) using this, uh, Studio, you probably don't have to, because I already did it for you. But if you're
+- [01:47:58.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6478s) running it on your own computer, you just do PIP install LGBT and it should be all ready to go.
+- [01:48:05.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6485s) And yeah, so as I mentioned, there are a couple of LMS implemented, so you can actually get a
+- [01:48:11.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6491s) list by a LGBT download list. Gives you a list of all the LMS implemented in LGBT. So it's a very
+- [01:48:19.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6499s) long list. Let's say we are interested in finetuning. I'm actually not running this command
+- [01:48:25.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6505s) because I already downloaded it for you. So it should be here in the checkpoints folder
+- [01:48:30.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6510s) and the Microsoft. So you don't have to download this model if you're running the Studio. But if
+- [01:48:36.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6516s) you're running it at home, yeah, execute this terminal command. Uh, there's also a Python API.
+- [01:48:43.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6523s) So if you want to use the GPT and Python for generating text can also do that. So here I'm
+- [01:48:51.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6531s) importing the LLM class from LGBT, and then I'm loading this model that I just downloaded here.
+- [01:48:57.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6537s) So let's do that. So it's loaded now. And now what we can do is we can do LLM dot generate.
+- [01:49:11.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6551s) Let's say asking a question here and see what it responds.
+- [01:49:15.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6555s) Yep. So that's like a response to what LLM eats. Um, we can also stream the response, which means
+- [01:49:21.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6561s) basically instead of generating all this text all at once, it will do it one text or token at
+- [01:49:27.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6567s) a time. Um, yeah. And then just for, you know, for fun, small exercise, you can try to download
+- [01:49:34.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6574s) another LLM, for example, you know, Pythia, Llama, Phi-3, maybe Phi-3 might
+- [01:49:42.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6582s) be a good one because it's a quite new and good model. So how you would do that is
+- [01:49:50.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6590s) let me just use the terminal. It's a bit easier than doing these things in a notebook.
+- [01:49:54.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6594s) Let's say `grep Phi`.
+- [01:49:59.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6599s) Yeah.
+- [01:50:05.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6605s) Oh, I forgot. Should type list here. Yeah. It's just something I recently added. Um,
+- [01:50:12.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6612s) I don't know two days ago, so I kind of forgot. Okay. So we can then maybe also
+- [01:50:17.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6617s) download to this model. GPD, download
+- [01:50:23.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6623s) Phi-3 spelling is a bit different. It's the way Microsoft uploaded these models. It's
+- [01:50:28.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6628s) with a capital letter here. It's with a smaller case letter. It's kind of a bit inconsistent,
+- [01:50:33.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6633s) but it's what it is. So yeah, thanks a bit, but shouldn't take too long.
+- [01:50:49.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6649s) So this is basically downloading the weights and the config files.
+- [01:50:59.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6659s) Okay. And then it's converting the weights into a little GPD compatible format.
+- [01:51:11.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6671s) So first it's uh, converting the safe tensors to bin files, which is a bit easier to parse.
+- [01:51:18.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6678s) So, because some have say tens of files and some have been found and then now it's loading the
+- [01:51:23.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6683s) weights. And yeah, I'm very proud of this, uh, progress bar that I just added the other day.
+- [01:51:28.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6688s) So it's showing you the progress, how long it takes to convert the weights and then they are
+- [01:51:34.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6694s) converted. And yeah, this should be then saved as one file. Um, so it's, uh, saved in this folder
+- [01:51:47.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6707s) as lit. I think it's lit model dot PTH or something like that. Let me double check. I always
+- [01:51:53.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6713s) forget the name. Not that it matters, but yeah, just showing you.
+- [01:51:57.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6717s) So you can now find this model here. And then this would be the LGBT compatible weight file.
+- [01:52:07.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6727s) And then I can load this. Um, okay. I forgot the name. Let's just put it here.
+- [01:52:16.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6736s) I'm out of memory because I still have the old Phi model in memory,
+- [01:52:27.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6747s) but you could also do what I could have done instead of restarting the notebook,
+- [01:52:31.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6751s) you could have just deleted LLM and then loading it. Cause you know, when you have this object here
+- [01:52:37.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6757s) and you call load in Python, it will load it and then assign it. So you had for example,
+- [01:52:42.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6762s) and you call load in Python, it will load it and then assign it. So you had for some
+- [01:52:46.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6766s) amount of time to LLMs in, in memory. Okay. So let's try this model.
+- [01:52:54.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6774s) Yep. It's also a relatively reasonable response. Yeah. And this is essentially how
+- [01:52:59.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6779s) LGBT works. And in the next notebook, we will be fine tuning it.
+- [01:53:04.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6784s) Okay. Let's now move on to part six instruction fine tuning. So there are multiple ways we can
+- [01:53:10.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6790s) fine tune a large language model. One is for example, a classification fine tuning.
+- [01:53:15.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6795s) And another one would be instruction fine tuning where we provide a, or we create a data set with
+- [01:53:22.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6802s) instructions. And then the large language model learns to answer questions or, you know,
+- [01:53:29.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6809s) follow instructions, for example, convert the sentence from active to passive voice or passive
+- [01:53:34.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6814s) to active voice, or fix the grammar in the sentence and so forth. For this one, we are not going to
+- [01:53:40.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6820s) do it from scratch because this would take a very long time. But if you're interested,
+- [01:53:44.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6824s) I have a notebook here with detailed notes. So this would be implementing the instruction fine
+- [01:53:50.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6830s) tuning process from scratch. You can see it's a lot of code, which might be a little bit more
+- [01:53:56.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6836s) complex. You can see it's a lot of code, which might take four to five hours to walk through
+- [01:54:01.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6841s) slowly. So in this case, we are going to use a lit GPT in the next two notebooks. But I wanted to
+- [01:54:07.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6847s) at least give you the introduction to instruction fine tuning, how the data set looks like,
+- [01:54:11.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6851s) because I think this really helps understanding what's going on when we talk about instruction
+- [01:54:17.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6857s) fine tuning. So yeah, just to give you a few more examples of instructions. So here on the
+- [01:54:24.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6864s) left hand side, I have three examples, convert 54 45 kilometers to meters. And then the desired
+- [01:54:33.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6873s) response that we want the LLM to generate would be in this case, 45 kilometers is 44 45,000 meters,
+- [01:54:40.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6880s) or provide a synonym for bright. In this case, a synonym for bright would be radiant. And here
+- [01:54:47.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6887s) another one added the following sentence to remove all passive voice. And then we give it the sentence.
+- [01:54:52.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6892s) And then here we have the sentence converted to active voice. So on the left hand side are examples
+- [01:54:59.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6899s) of instructions that we would feed to the LLM. And then on the right hand side, these are the
+- [01:55:04.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6904s) desired responses. So the LLM should respond in this way, or in a similar way, it doesn't have to
+- [01:55:10.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6910s) be exactly that way. But it should be, of course, answering or fulfilling the task here. So for that,
+- [01:55:18.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6918s) I have prepared a data set. So I created it myself. It's Yeah, I just called it instruction data.
+- [01:55:24.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6924s) So let's take a look. So this is basically a JSON file here. So yeah, here I have a bunch of
+- [01:55:31.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6931s) instruction entries. So here, each entry consists of an instruction key, an input, and an output. So
+- [01:55:38.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6938s) the input is the instruction. And then I have, for example, evaluate the following phrase by
+- [01:55:45.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6945s) transforming it into a spelling into the spelling given on it's kind of like a weird one, though.
+- [01:55:50.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6950s) Okay, let's let's take maybe this one. It's easier to talk about, edit the following sentence for
+- [01:55:56.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6956s) grammar. And then we give it the sentence as input. And then we hope the LLM will generate something
+- [01:56:02.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6962s) like this, where it corrects the grammar. So here it says he go to the park every day. And one correct
+- [01:56:07.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6967s) way would be he goes to the park every day. So it's correcting this spelling here or grammar.
+- [01:56:13.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6973s) So some of these examples don't have this input though. So you can see here, I have an instruction
+- [01:56:19.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6979s) that says convert 45 kilometers to meters, but there's no input field. So in this case, the input
+- [01:56:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6986s) is kind of like part of the instruction. So that these two forms of instructions, and the reason why
+- [01:56:32.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6992s) it's formatted like that is I took the alpaca data set as an example, which is, I would say one of the
+- [01:56:38.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=6998s) early really popular instruction data sets. And I just followed the same style, just for historic
+- [01:56:44.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7004s) reasons. And in that case, some of them had inputs and some didn't. So in practice, you can actually
+- [01:56:50.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7010s) also get rid of the input field and always, always include this as part of the instruction,
+- [01:56:56.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7016s) you could do something like this, for example, and then just get rid of this. But yeah, I included it
+- [01:57:02.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7022s) for historic reasons here, because that's like the original way of doing it.
+- [01:57:08.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7028s) Yeah, we have, we can count this, we have about 1100 instructions here. And this is like, I would
+- [01:57:16.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7036s) say, a relatively small data set. Originally, alpaca was about 52,000. And later papers like Lima,
+- [01:57:26.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7046s) I think it stands for less is more, showed that you can also get really, really good results with
+- [01:57:31.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7051s) only 1000 examples. So there, they focused more on high quality instruction inputs and longer
+- [01:57:37.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7057s) inputs, and found that with 1000 instructions that are high quality, you can actually beat a
+- [01:57:43.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7063s) model trained on 52,000 in alpaca. But then also, you can always you can also think about it, okay,
+- [01:57:50.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7070s) quality is key, but you can also think about then, okay, why don't I make 50,000 high quality
+- [01:57:54.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7074s) instructions, right? So there are several data sets available on the internet, I think that maybe
+- [01:58:00.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7080s) hundreds or 1000s of these data sets, some even have 500,000 or so instruction inputs here.
+- [01:58:07.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7087s) So to make the training relatively fast for this workshop, I have a very small data set only
+- [01:58:11.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7091s) consisting of 1100, and relatively short instructions just to accelerate the training a bit.
+- [01:58:21.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7101s) So let's load this data set. So we have 1100 instructions, as I mentioned, and yeah, each
+- [01:58:28.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7108s) example, each training example is like a Python dictionary. And you can see, there's an instruction
+- [01:58:36.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7116s) field, an input field, and then an output field. And like I mentioned before, some have a blank
+- [01:58:43.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7123s) input field. Now, this is how a data set entry looks like. But this is not how we would typically
+- [01:58:51.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7131s) feed it to the LLM. Because yeah, if you used ChatGPT before, you know that you're
+- [01:58:56.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7136s) just providing the LLM with natural language, you're not using any, you know, like programming,
+- [01:59:02.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7142s) formatting characters or something like that. So in that sense, what we do first is we convert
+- [01:59:07.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7147s) this instruction into like a human written text or something that looks more natural.
+- [01:59:14.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7154s) So in this case, I'm showing an example using the alpaca prompt style template. So what it is
+- [01:59:19.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7159s) doing is it's converting this input or the whole entry into a human like, you know, text. So here,
+- [01:59:29.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7169s) what it is doing is prepending something like a boilerplate, something like below is an
+- [01:59:34.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7174s) instruction that describes a task, write a response that appropriately completes the request. So it's
+- [01:59:39.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7179s) giving the LLM more context of what we wanted to do. And then we format the instruction here.
+- [01:59:46.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7186s) So we have like a header, like these three pound signs, and then instruction, three pound
+- [01:59:51.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7191s) sides input, and then the response. So this would be a formatted training example. And here, on the
+- [01:59:57.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7197s) left hand side, I'm using the alpaca prompt style, which was, I would say, one of the first popular
+- [02:00:02.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7202s) prompt styles that were used. I'm using that for historic reasons, but you don't really need all
+- [02:00:08.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7208s) of that. So you can make it actually also simpler. For example, in Phi-3, they have something
+- [02:00:12.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7212s) that's more like this, where you have a user and assistant tag, instead of using instruction,
+- [02:00:20.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7220s) they use user, and instead of response, they use assistant, and they don't have any boilerplate.
+- [02:00:25.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7225s) So I also tried this out with the same LLM when I instruction fine tuned it, and you get approximately
+- [02:00:30.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7230s) the same performance out of the LLM. If you use this style, and what's nice about it is it uses
+- [02:00:37.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7237s) less resources, because here you can see this is much more text. So the LLM needs a larger text
+- [02:00:43.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7243s) input, which requires then of course, more memory. So in this case, this is more even more memory
+- [02:00:49.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7249s) efficient. But I'm using alpaca style here, because that's the original, that's, I would say the most
+- [02:00:54.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7254s) popular one. So here's some code that formats an input in this alpaca style. And you can see on
+- [02:01:04.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7264s) how I deal with the input. So I say, provide the input if there is an input field, otherwise,
+- [02:01:10.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7270s) leave it blank. So maybe it's easier to just show it to you. See.
+- [02:01:23.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7283s) So here is how the model input would look like that's without the response. This is what the
+- [02:01:27.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7287s) model that they will see when we wanted to generate stuff, and then also adding the response here.
+- [02:01:32.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7292s) So the complete formatted example would like us for it would look like as follows where we have
+- [02:01:38.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7298s) here basically what I've shown you above here. So that's just the formatted prompt some code for
+- [02:01:43.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7303s) that. And if we don't have an input field, then it then it will skip it. So you can see, there's
+- [02:01:50.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7310s) only an instruction, and there is no input because in that case, if the input is empty, it will skip
+- [02:01:57.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7317s) it. Okay, so we now saw how we can take this entry and format it into an instruction style.
+- [02:02:08.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7328s) And then the next step would be tokenizing that. So this is going back to the very first notebook
+- [02:02:14.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7334s) we talked about, about tokenization. So a long time ago, but we talked about converting things
+- [02:02:21.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7341s) into token IDs, we use the same concept here. So we convert these instructions to token IDs.
+- [02:02:28.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7348s) And then, yeah, so, so first, we converted into token IDs. But then, we usually want to create
+- [02:02:35.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7355s) training batches. And this is similar to what we have done before during pre training. So let me
+- [02:02:40.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7360s) see if I can spontaneously find the right section here. So here, we, when we go back, we created
+- [02:02:48.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7368s) these batches where each has the same length. And here, it was easy in pre training, because
+- [02:02:53.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7373s) we could just chop it up like that. So where we could define us a certain length, and then make
+- [02:02:58.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7378s) equal length chunks and put them into mini batches or batches. So here, it was relatively easy in
+- [02:03:05.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7385s) pre training to prepare the data set like that. But yeah, during instruction fine tuning, each
+- [02:03:10.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7390s) instruction input would have a different length. So how do we actually deal with that? So one way
+- [02:03:17.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7397s) to deal with that would be to add so called on padding tokens, or padding tokens, and padding
+- [02:03:24.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7404s) tokens here are, if you remember, it's a long time ago, but we had this on end of text token. So we
+- [02:03:33.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7413s) had this end of text token here. And yeah, here's where we are reusing this end of text token, which
+- [02:03:39.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7419s) corresponds to token ID 50,256. So, so in the left hand side we have three instructions
+- [02:03:47.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7427s) formatted. And here we have the token IDs. Of course, they are very short, because I wanted
+- [02:03:51.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7431s) to fit it onto one image, but you know, they would be very long in reality. But if we assume
+- [02:03:57.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7437s) these are my three different instruction inputs, you can see that instruction input one has five
+- [02:04:06.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7446s) tokens, the second one, two tokens, and the third one, three tokens. So in order to make them all
+- [02:04:10.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7450s) equal length, what we do is we are padding them. So this means we are making them all the same
+- [02:04:16.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7456s) length here. And then if we have a different batch, we do the same thing here. But note that we don't
+- [02:04:20.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7460s) have to have all the batches the same size. So the first batch can be longer than the second batch.
+- [02:04:27.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7467s) So in the sense, we are just making sure that all examples in a single batch have the same length.
+- [02:04:33.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7473s) So you can see, in this case, the longest example is five. So everything is padded to five tokens.
+- [02:04:39.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7479s) And the second batch here, the longest example is four. So we are padding everything to four,
+- [02:04:44.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7484s) in this case, only the first example. So we're just making sure everything is the same length.
+- [02:04:49.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7489s) And then when we create the training, sorry, the targets for training, what we do is also,
+- [02:04:54.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7494s) um, we create these tokens shifted by one. And again, this is a very similar to what we did with
+- [02:05:00.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7500s) by one. And again, this is a very similar to what we've done in pre-training. So in pre-training,
+- [02:05:05.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7505s) I think I should have a figure here somewhere. Maybe it was in the previous notebook.
+- [02:05:21.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7521s) Thought I had a figure on this. Let me see. Maybe it was here.
+- [02:05:25.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7525s) Yeah, I think this is it. So if you look at this in pre-training, what we've done is we have
+- [02:05:31.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7531s) everything shifted by one position. So we have the blue box, which is the input, and then the targets
+- [02:05:36.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7536s) shifted by one position. And we do the same thing now for instruction fine tuning. So here we have
+- [02:05:41.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7541s) the input instruction and then the targets are shifted by one position. So you can see that
+- [02:05:47.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7547s) everything is shifted to the right plus one would be the target. And then the target is the target.
+- [02:05:54.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7554s) And then if we do that though, the targets will be shorter than the inputs. So we add also a
+- [02:05:59.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7559s) padding token here. And what's nice about it is this padding token is this end of text token.
+- [02:06:04.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7564s) So the LLM will then also learn, okay, this is the end of the text. Now the end of my response
+- [02:06:10.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7570s) and we can use this token to also, yeah, when we create the instructions to
+- [02:06:14.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7574s) stop generating the response, when we encountered this padding token.
+- [02:06:18.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7578s) Um, one more thing I wanted to explain is, so this is how the, the data looks like on the left
+- [02:06:25.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7585s) hand side, right? The formatted response. And we have then optionally these padding tokens, but,
+- [02:06:30.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7590s) um, also, uh, in, in practice, what can happen or what is common sometimes is so I should
+- [02:06:37.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7597s) actually say we have an end of text token that we add. It's quite common, but then also what I should
+- [02:06:42.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7602s) say is we typically mask out also the instructions when calculating the loss.
+- [02:06:49.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7609s) I would say it's more like an optional step, but I did experiments and there was actually also
+- [02:06:54.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7614s) a paper showing that for shorter data sets, you may not need to do that. And it's actually
+- [02:06:59.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7619s) better not to do it, but it's relatively common to mask out the instructions. So what that means is
+- [02:07:04.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7624s) essentially that when we are calculating the loss for the LLM, we are only calculating the loss over
+- [02:07:10.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7630s) the response. Otherwise, uh, we do the same loss calculation that we do during pre-training where
+- [02:07:17.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7637s) we are calculating the loss over all the inputs, essentially. So if I go back, uh, where
+- [02:07:24.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7644s) basically we have the input here and then the targets and the targets are just shifted by one.
+- [02:07:28.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7648s) And when we calculate the loss, we calculate it for every token position. And with instruction
+- [02:07:34.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7654s) fine tuning, it's often common to remove the inputs from the loss calculation and how it can
+- [02:07:41.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7661s) be achieved is by masking these by minus 100, but that's maybe too much detail because I'm
+- [02:07:46.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7666s) not showing you the loss calculation. If you're interested though I have a walkthrough here,
+- [02:07:51.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7671s) um, how it's done, but it's, yeah, it's a bit more code. So let's, let's maybe in this particular
+- [02:07:58.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7678s) case, not worry about these minus 100s, but yeah, like if you're wondering if we calculate the loss
+- [02:08:04.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7684s) over the inputs, no, you know that it is a research problem that some people do it and some people
+- [02:08:09.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7689s) don't. Okay. So this is in a nutshell, how a dataset for instruction fine tuning works.
+- [02:08:15.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7695s) And so next we will go over instruction fine tuning and the GPT part two would be the
+- [02:08:22.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7702s) instruction fine tuning with LGBT. Um, but before we go to the instruction fine tuning itself,
+- [02:08:28.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7708s) just a very brief note about a technique we are going to use to save some compute
+- [02:08:34.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7714s) resources to make it a bit faster and memory efficient. So there's a technique called LoRA,
+- [02:08:40.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7720s) which stands for low rank adaptation. And so how it works is essentially we are approximating the
+- [02:08:46.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7726s) weight updates. So if you think about any deep new network, it doesn't have to be large language
+- [02:08:51.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7731s) models. So usually have some pre-trained weights or just the weights in the model.
+- [02:08:57.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7737s) And then at each yeah, training loop, what you're doing is you are computing the weight update,
+- [02:09:03.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7743s) how you are going to change the weights in that model. So here, this is the Delta W that's how
+- [02:09:08.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7748s) the weights would change in each training pass. And if W is a 10 by 10 matrix, then this
+- [02:09:16.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7756s) would be 100 values, 100 weight weight values. And the weight update would be also 100 values here.
+- [02:09:24.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7764s) So we have 10 times 10. Now in LoRA, we are replacing this weight update matrix by two smaller
+- [02:09:31.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7771s) matrices that are approximating this. So for instance, assume if this is 10 by 10, then we
+- [02:09:37.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7777s) would have, for example, something like 10 by two and two times 10 and two times 10 is 20 plus 20,
+- [02:09:45.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7785s) we have 40. So we are kind of saving weights by using these small matrices compared to the
+- [02:09:53.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7793s) original one. And if you think about a thousand times thousand, that's 1 million,
+- [02:09:58.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7798s) right? Um, and we have two times thousand time plus two times thousand. That's 4,000, right?
+- [02:10:05.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7805s) So in this sense, uh, we can save a lot of weights by using smaller matrices in the
+- [02:10:10.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7810s) inner dimension here are that's the rank we, I mean, this is a hyper parameter. We usually
+- [02:10:14.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7814s) use something like eight or 16, but it's just like an example. And if this is like too complicated,
+- [02:10:19.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7819s) don't worry about it. It's just a way of saving some memory by approximating something.
+- [02:10:26.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7826s) Um, and yeah, the LoRA layers, they're usually applied to the linear layers the weight of
+- [02:10:33.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7833s) matrixes, the matrix layers that are linear layers. So, and in a neural network or in LLM,
+- [02:10:39.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7839s) specifically, we would encounter them in the output layer in this feed forward module, the multi-layer
+- [02:10:45.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7845s) perceptron module, which has two linear layers, and then the matrix multiplications, the QKV
+- [02:10:52.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7852s) matrices in the masked multi-head attention modules. And we have that over a number of blocks.
+- [02:10:59.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7859s) So that's actually a big improvement in terms of memory. If we apply this to all the blocks in the
+- [02:11:04.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7864s) model. So here in this section, we are now loading the data set from the previous notebook,
+- [02:11:14.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7874s) our 1,100 instructions. And before we start instruction fine tuning, of course, like in every
+- [02:11:20.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7880s) deep learning project, we should divide the data into training and test data. We also have a
+- [02:11:26.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7886s) validation set later that is created by, by the GPT, but here at least we are dividing it into
+- [02:11:31.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7891s) training and testing data. So we will have in this case, 935 test, sorry, train samples
+- [02:11:42.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7902s) and 165 test samples. And we are also saving them as Jason files here.
+- [02:11:48.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7908s) Okay. So now we have this test and train Jason here. Now we are going to do the instruction fine
+- [02:11:57.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7917s) tuning. And instead of using regular instruction fine tuning, we will use the LoRA instruction
+- [02:12:04.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7924s) fine tuning, but you can also remove that. And yeah, just try the regular one, depending on
+- [02:12:08.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7928s) your hardware though, this is more expensive. And this might be, I would say for this workshop to
+- [02:12:14.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7934s) save some memory for smaller hardware, if you are executing this on a, on your own computer,
+- [02:12:21.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7941s) I would recommend this one. And yeah, so here are a few settings. We define the Jason data set
+- [02:12:28.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7948s) format that we are going to use. We use 10% of the data for validation and we provide the path
+- [02:12:34.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7954s) to the training Jason file that we created. And we train for three epochs and block the results
+- [02:12:40.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7960s) every 100 epochs. So let's see, that might take a while because yeah, we are still, I mean,
+- [02:12:48.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7968s) it's relatively efficient, but we are still training over three epochs. So by default,
+- [02:12:54.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7974s) you will see all the hyper parameter settings. So yeah, edit this. So for record keeping,
+- [02:12:59.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7979s) so you can always see what's happening under the hood. Um, we have only 2.6 million trainable
+- [02:13:06.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7986s) parameters and the Phi model has 2.7 or 2.8 billion parameters.
+- [02:13:15.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=7995s) And so you can see with LoRA, instead of training 2.8 billion parameters,
+- [02:13:20.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8000s) we are only training 2.6 million, which is like it's 1000, uh, less parameters,
+- [02:13:26.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8006s) 1000 times more savings in terms of memory. I'm not memory. I mean,
+- [02:13:31.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8011s) savings will be not that big in memory because the matrix multiplications usually, uh, itself
+- [02:13:37.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8017s) take more memory than the weights, but we will save still a lot of memory and we will save
+- [02:13:42.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8022s) especially storage because we only have to now store 2.6 million and stuff, 2.8 billion
+- [02:13:49.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8029s) parameters. Um, you can see the, the validation loss is NA here. And that is because the
+- [02:13:55.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8035s) validation loss is only calculated on every so many steps. So actually you can look this up here,
+- [02:14:02.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8042s) you know, so every 100 steps is because otherwise it would be too expensive if at every
+- [02:14:07.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8047s) step we would calculate the validation loss. So this will be first available after step 100,
+- [02:14:15.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8055s) but we can already see that the validation loss goes down, which is great. So it goes from 2.2
+- [02:14:19.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8059s) to 0.5, which is actually great. Maybe we don't need to train even three epochs. Um,
+- [02:14:23.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8063s) it's actually already quite, quite good here, but we will see, we can see it's still going down.
+- [02:14:30.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8070s) We are in the second epoch now. So again, I used a very small data set so that this goes very fast.
+- [02:14:35.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8075s) If you train, let's say on the original Phi data set, sorry, on the original data set with 50,000
+- [02:14:41.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8081s) entries, it might take, I don't know, three hours or something like that. So in this case, um,
+- [02:14:46.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8086s) yeah, to make it faster, I use my small data set here with very short entries. You can also see the
+- [02:14:53.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8093s) maximum length of the training data is 101 tokens where the model supports up to 2048.
+- [02:15:01.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8101s) So in this case, you could have much, much, much larger inputs, but again, to make it more efficient.
+- [02:15:07.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8107s) Um, yeah, I used a very small data set here so that it will complete in a few minutes. So yeah,
+- [02:15:12.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8112s) 100 steps have elapsed. So we should next time it prints the line, we should see the validation
+- [02:15:19.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8119s) performance. Yep. We can see 0.557, which is actually quite good. We had four, nine, six,
+- [02:15:25.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8125s) five, five, seven, but you can see there's a jump here. Oh, it's going down again. There was a
+- [02:15:29.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8129s) slight jump in the training, Chris, uh, training loss. Um, I don't know exactly why this can
+- [02:15:33.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8133s) sometimes happen if it's a specifically challenging example. Um, yeah. And so in this case we can see
+- [02:15:42.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8142s) validation losses 0.557 note that this looks identical because it's only updated every
+- [02:15:47.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8147s) hundred steps. Like I mentioned for efficiency, where for the forward pass, we have to compute
+- [02:15:54.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8154s) the loss or the predictions anyway. And then in the backward pass, we compute the loss for the
+- [02:15:59.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8159s) updates. So in this case, this is of course, for every iteration, where this is only for every
+- [02:16:04.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8164s) 100 for just efficiency reasons. Yeah. We can see it's still improving at least based on the
+- [02:16:14.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8174s) loss here on the training set loss validation. We don't know yet. So it could be overfitting,
+- [02:16:19.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8179s) but it looks actually quite close and that looks quite good. Actually
+- [02:16:24.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8184s) not much overfitting at least.
+- [02:16:28.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8188s) So about 213 seconds elapsed, which is three and a half minutes. Right. Um, and we can see
+- [02:16:34.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8194s) a validation of this 0.51 and the training loss is 0.9. So in this case, it's actually not even
+- [02:16:41.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8201s) overfitting. So it's about equal and note that this is also an approximation, right? So this
+- [02:16:46.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8206s) is only approximated on the current batch and not the whole training set, but we can see
+- [02:16:50.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8210s) approximately that the model trained quite well here. Oh yeah. I already see this as the end of
+- [02:16:56.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8216s) the notebook. So the next thing is actually an exercise for you. So we will be evaluating the
+- [02:17:02.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8222s) model based on how good the responses are in the next notebooks. So here we are only looking at
+- [02:17:08.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8228s) the loss, but we will also compute a score. And for that, we will save the test set responses
+- [02:17:15.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8235s) because yeah, like, you know, from other deep learning projects, we should take a look at the
+- [02:17:20.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8240s) test set, which has not been used for training. If we want to get an unbiased estimate of the
+- [02:17:24.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8244s) performance. So here this function, what it is doing is formatting the input for the model.
+- [02:17:34.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8254s) And this is for the test set. And so the task would be, I can actually delete this
+- [02:17:39.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8259s) because this is something you shouldn't see. Um, the task is essentially to generate the responses
+- [02:17:48.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8268s) using the model for all the test data points. So here, so we can iterate over the test data set
+- [02:17:57.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8277s) for E in range test data. I should say length.
+- [02:18:08.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8288s) And then for each of these tests that entries I recommend computing,
+- [02:18:15.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8295s) calculating the response by the model, the model response, and then adding it back to this, uh,
+- [02:18:22.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8302s) test set test data dictionary. So for that, you have to use the format input, right? Because
+- [02:18:29.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8309s) otherwise, if you only use this, it will give you this. Oh, it doesn't. Yeah, of course it will give
+- [02:18:37.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8317s) you this format. And we need actually for the model input, we need these two formatted in,
+- [02:18:43.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8323s) in this fashion, right? Because that's also what the model has seen during training.
+- [02:18:46.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8326s) So you have to apply this format
+- [02:18:54.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8334s) input function. Oh, what happened here? Oh, format input.
+- [02:19:01.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8341s) Here we go. So this would be the model input and yeah, generate this for each test sample and
+- [02:19:07.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8347s) then add this to the test data set, the model response basically. So the model, so maybe pause
+- [02:19:14.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8354s) the video. I'm talking too much. Maybe, maybe just pause the video and try to think about how
+- [02:19:18.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8358s) to do that. Because yeah, for that, we will be using the LLM lot method in LGBT that we used
+- [02:19:25.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8365s) previously. And then you can use LLM dot generate to generate the response for this one here. So
+- [02:19:31.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8371s) maybe I can just show it to you, but if we have the LLM lot, it, you could be doing LLM generate
+- [02:19:37.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8377s) like this to generate the response for the first test set sample. And the task for
+- [02:19:44.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8384s) you is to apply this to all test set samples. Okay. Maybe pause the video and then give it a try.
+- [02:19:54.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8394s) Okay. So let me show you how I would do it. I would probably use, um,
+- [02:19:58.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8398s) a progress bar for `import tqdm`. I think it's from, I always make this mistake
+- [02:20:05.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8405s) `from tqdm import tqdm`. And then `for i in tqdm` and then
+- [02:20:17.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8417s) oh, what do I want to arange? Right. And then test data. I think this should work.
+- [02:20:26.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8426s) Just thinking about it. I think this should be fine. And then
+- [02:20:29.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8429s) it's actually need to lot the LLM. Let me do that from, uh, let tqdm part.
+- [02:20:38.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8438s) And we are going to use first the base model, by the way. And then in the next exercise,
+- [02:20:43.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8443s) we do the same thing for the fine tune model. So let's do LLM,
+- [02:20:49.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8449s) um, and I'm not, oh, sorry. I'm not load and then Microsoft
+- [02:21:01.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8461s) fight too. I like the fight to model because it's relatively small, but capable.
+- [02:21:06.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8466s) Okay. So let's load this one. Um, yeah. And then here
+- [02:21:14.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8474s) we should replace it with an eye, of course. And this looks good. So we have test data.
+- [02:21:28.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8488s) And then how do we call it? Maybe base model and then assign the response. So I think this
+- [02:21:35.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8495s) should be correct. We'll see. And so right now I'm iterating over all the test data points,
+- [02:21:40.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8500s) format the input, give it to the LLM here, generate the response and assign the response
+- [02:21:45.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8505s) to the space model thing. So yeah, this might take a while. So in the meantime, I could actually
+- [02:21:53.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8513s) already just delete this already have a solution here. Um, so let me now do this also for the next
+- [02:22:02.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8522s) part. So LLM load. And for that one, we want the fine tune model, right? So I go up here
+- [02:22:10.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8530s) and look what the file path is. So here it says where it's saving it. And so we need
+- [02:22:16.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8536s) an LGBT. We need the folder similar to how we use the folder here. So we need the folder,
+- [02:22:25.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8545s) copy this one. We can also specify a different folder. That's just the default folder. There's
+- [02:22:31.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8551s) actually a setting for that. If you scroll up output deer that you can set you can just,
+- [02:22:38.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8558s) yeah, you would set it like this in my directory or something like that.
+- [02:22:47.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8567s) But yeah, for this example, I didn't specify it. So it's going to be this directory here.
+- [02:22:57.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8577s) And should probably delete the old LLM, just to free up some memory.
+- [02:23:08.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8588s) And then I can actually copy. Oh, that's already finished. Let's take a look actually test
+- [02:23:13.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8593s) data. Let's just take a look at the first one. Oh yeah. So we have the input, the output, and then
+- [02:23:20.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8600s) the baseball response. The car is as fast as a cheetah. Okay. It's actually a bit long. So it,
+- [02:23:30.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8610s) um, create some other stuff here. Let's see if it's, I hear it looks better. So yeah. Um,
+- [02:23:37.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8617s) the name of, so we ask it, the author name of the book, pride and prejudice. Um, the correct
+- [02:23:44.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8624s) answer is Jane Austin. And here it's a bit more verbose. It says the author of pride and
+- [02:23:48.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8628s) prejudice is Jane Austin, but I would count this as a correct answer. So this looks good
+- [02:23:53.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8633s) now. Um, but this is the base model. So actually we don't expect it to be that good.
+- [02:23:58.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8638s) And the reason is, I think, or many people think, uh, Microsoft has actually fine-tuned the base
+- [02:24:03.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8643s) model on instruction data. So, which is why it's relatively good, but it's not perfect. You can see
+- [02:24:09.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8649s) this is, this is good, but then it has some other stuff, but it's actually a quite good base model.
+- [02:24:15.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8655s) I'm surprised. Okay. But let's, let's take a look at the fine tune model.
+- [02:24:30.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8670s) So let's do this. I actually don't need this part.
+- [02:24:32.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8672s) Okay.
+- [02:24:40.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8680s) And then in the next notebook, we will be evaluating the models with your benchmarks,
+- [02:24:45.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8685s) common benchmark data sets, and then also, uh, another scoring function.
+- [02:24:51.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8691s) So here we are just, you know, uh, eyeballing it. We are just looking at it and that looks good.
+- [02:24:55.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8695s) That doesn't look so good, but it's not very quantitative, right? We are just, you know,
+- [02:24:58.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8698s) looking at some outputs and eyeball it. I think people, I don't like the term,
+- [02:25:05.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8705s) but some people call it vibes. So it's like, you know, perceiving how good the model performs.
+- [02:25:15.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8715s) Yeah, there's a lot of, if you haven't noticed,
+- [02:25:17.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8717s) there's a lot of jargon in the large language model field.
+- [02:25:20.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8720s) Okay. It's actually quite, I mean, it might, uh, you know, you might think it's taking a long time,
+- [02:25:25.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8725s) but it's actually quite fast. I'm actually quite impressed how fast it goes.
+- [02:25:32.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8732s) Okay. Let's take a look at some fine tune response data. Let's take a look at the first
+- [02:25:39.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8739s) example again. Okay. So let's take a look at the first example. So let's take a look at the first
+- [02:25:46.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8746s) fine tune response data. Let's take a look at the first example again.
+- [02:25:52.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8752s) Yeah. See, this is actually already improved. So you can see the input is the car is very fast.
+- [02:25:57.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8757s) The output is the desired output would be the car is as fast as a, as lightning, but this is only,
+- [02:26:03.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8763s) you know, one possible example. And the base model generated, the car is as fast as a cheetah
+- [02:26:08.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8768s) and then has some other, you know, stuff here where the fine tune model is actually more concise.
+- [02:26:14.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8774s) It says the car is like a bullet, which is actually quite nice. It's like a very nice
+- [02:26:18.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8778s) and concise one. And you can see it hasn't memorized anything. Um, I mean, this is a test
+- [02:26:23.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8783s) data, so it hasn't seen the test data, but it's also using a different response, but I would also
+- [02:26:28.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8788s) count this as a correct response. So the next notebook, let's just take a look at some common
+- [02:26:32.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8792s) benchmarks and then we will develop a scoring way of doing this more quantitatively instead of
+- [02:26:38.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8798s) just eyeballing it. Yeah. So in part three, we are going to use, or going to take a look at some
+- [02:26:45.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8805s) benchmarks, some ways we can calculate the performance of LLMs based on popular benchmarks.
+- [02:26:50.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8810s) One such benchmark is MMLU, which stands for measuring massive multitask language understanding.
+- [02:26:57.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8817s) And every time there's a new GPT model or what is the other one? Anthropic Claude model or
+- [02:27:04.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8824s) Gemini model. There is usually a technical report with an MMLU score. And this measures
+- [02:27:09.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8829s) essentially the knowledge of the LLM based on multiple choice questions. I would say multiple
+- [02:27:15.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8835s) choice question answering is not the best way to evaluate LLMs because it's yet testing the
+- [02:27:19.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8839s) knowledge, but it doesn't really test how well it generates text. But in any case, so how it works
+- [02:27:24.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8844s) is essentially there is an input, for example, which character is known for saying to be or not
+- [02:27:30.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8850s) to be. That is the question. And so for potential answers are Macbeth, Othello, Hamlet,
+- [02:27:36.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8856s) and King Lear. And then, you know, the model gets this input and has to respond with a correct
+- [02:27:42.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8862s) answer. In this case the correct answer would be C Hamlet. And then, yeah, we will check if the
+- [02:27:47.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8867s) answer is correct. Um, and if yes, we compute this as a score, and then we divide the total
+- [02:27:53.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8873s) number of scores by the number of examples, multiply it by 100% to get accuracy. So what
+- [02:27:59.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8879s) it means is essentially a 90% accuracy means it has 90% has answered 90% of the questions correctly,
+- [02:28:07.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8887s) for example. So this would be one way of evaluating LLMs. And there's a tool called the Lutha AI LM
+- [02:28:15.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8895s) evaluation harness, which essentially does the same thing, but also for different tasks. So it's
+- [02:28:22.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8902s) actually a really nice tool which integrates multiple, multiple methods. Um, so here I'm just
+- [02:28:27.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8907s) showing you an example in LGBT, how we use the Lutha LM evaluation harness to compute Hella
+- [02:28:34.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8914s) Swag, Truthful QA, and MLU scores. Um, this would be one way of getting performance estimates for an
+- [02:28:41.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8921s) LLM. Another one is Alpaca EVO. So Alpaca EVO is a leaderboard where the developers of that leaderboard
+- [02:28:50.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8930s) compare models to GPT four preview. So you, if you have a model and you generate a response,
+- [02:28:58.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8938s) they use a GPT four based judge or auto annotator. And they ask that GPT four model,
+- [02:29:05.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8945s) how does this model response compare to GPT four preview? And then it gives you a win rate. And
+- [02:29:12.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8952s) this means basically GPT four omni omni omni wins 57% of the time compared to GPT four preview.
+- [02:29:22.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8962s) And then something like the original GPT four model, it only wins 38% of the time compared to
+- [02:29:27.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8967s) the GPT four preview model. So it's essentially like a relative benchmark compared to how a model
+- [02:29:34.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8974s) compares to GPT four preview in terms of its response quality. Another popular benchmark,
+- [02:29:39.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8979s) I think it's maybe even the most popular today is the elements is ChatBot Arena. So how this
+- [02:29:45.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8985s) ChatBot Arena works is it's essentially crowdsourcing the evaluation. So I can actually
+- [02:29:50.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8990s) maybe show this a bit bigger. So um, here, what you do is essentially you have two models, let's
+- [02:29:58.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=8998s) say Gemini and Phi-3, and then you are comparing or so you're giving it the same answer,
+- [02:30:03.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9003s) or sorry, the same response, and then you're comparing the answers. So there's model a Gemini,
+- [02:30:08.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9008s) model B, Phi, and both get the same instruction. But both, of course, generate different answers.
+- [02:30:14.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9014s) And then as a user, you can say, a is better, B is better. It's a tie or both are bad. And based on
+- [02:30:21.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9021s) this ranking, yeah, the people at LMS ChatBot Arena, calculate a leaderboard, and then you can see
+- [02:30:29.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9029s) how the model compares to other models. And I think this is actually a really nice benchmark
+- [02:30:33.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9033s) because it, you know, it asks people actually, how useful do they find them? How good are the
+- [02:30:38.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9038s) responses? Of course, you know, it's not perfect, because you have a knowledge base questions,
+- [02:30:44.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9044s) you still need to know the correct answer to give a correct rating here. So for example,
+- [02:30:48.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9048s) I don't know if you ask it, who was the first president of the US and it gives you a wrong
+- [02:30:53.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9053s) response, you have to know that this is a wrong response to give it a bad rating, right. So in
+- [02:30:58.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9058s) the sense, it requires humans to also know the correct response. But I think it's still
+- [02:31:02.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9062s) quite a nice way of evaluating LMS. So in this notebook, I will go over how we do the
+- [02:31:12.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9072s) MMU evaluation. And then in the next notebook, I will show you an automated way that is more
+- [02:31:18.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9078s) similar to this alpaca evil. Okay, so actually, I may have accidentally deleted a few cells,
+- [02:31:29.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9089s) so let me just do this off the top of my head. So in the LGBT, how we would
+- [02:31:36.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9096s) get the scores, I would just do the GPT evaluate list. And then, so this would be listing me or
+- [02:31:43.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9103s) listing all the tasks that exist in the evaluation harness, the Luther AI evaluation harness.
+- [02:31:51.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9111s) Yeah, it's a bit ugly, because we installed TensorFlow at some point. So this is a very
+- [02:31:56.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9116s) long list of all the tasks supported in LGBT. If you want to be a bit more specific, you can do
+- [02:32:06.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9126s) also on say, and then it should only list the MLU related tasks.
+- [02:32:20.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9140s) So
+- [02:32:31.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9151s) still a lot of tasks. Let's see. Let's just use one of them. Which one should we use?
+- [02:32:39.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9159s) Let's just do this one. Okay, so now we can, I can actually we can use so it's a bit crowded
+- [02:32:50.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9170s) there. LGBT. Evaluate the model, right? Microsoft to the base model first. And tasks, let's just use
+- [02:33:05.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9185s) this one. And we can also define a batch size. So it goes a bit faster and see how that performs.
+- [02:33:20.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9200s) And then I can do the same thing for the fine tune model.
+- [02:33:26.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9206s) This is actually the exercise. So I will leave this as an exercise for you
+- [02:33:29.920](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9209s) to do the evaluation of the fine tune model. But let's first see what we get here.
+- [02:34:00.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9240s) Oh, actually, it's a really bad score. Yeah, it didn't get anything correct. Let's try another one.
+- [02:34:24.240](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9264s) Let's try this one.
+- [02:34:30.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9270s) Okay.
+- [02:34:47.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9287s) I could also just use one of the ones I tried earlier that I have here. Well, this is actually
+- [02:34:54.080](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9294s) the whole MOU humanities, other social sciences stem.
+- [02:35:05.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9305s) Yeah, this looks a bit better. So we get 28% accuracy on this task. Now as your task,
+- [02:35:12.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9312s) try to do the same thing on the fine tune LLM. So maybe pause the video and see if you can evaluate
+- [02:35:17.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9317s) the fine tune LLM. So how I would do it is I would just copy this
+- [02:35:26.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9326s) and then change it with our fine tune one, which is
+- [02:35:30.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9330s) this out fine tune LoRA, I will just copy this path.
+- [02:36:00.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9360s) 29. So this is actually a slight improvement. So our fine tune LLM is a bit better than the baseline
+- [02:36:27.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9387s) and even though we only had a very, very, very small data set and only trained it for like three
+- [02:36:31.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9391s) minutes. So that's actually quite nice. Okay. So this is then how we do benchmark evaluation.
+- [02:36:37.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9397s) Of course, you can also use other tasks. You can, like I showed you before, use multiple like that,
+- [02:36:43.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9403s) but you know, that would take a bit too much time. So let's jump into the final notebook and see how
+- [02:36:49.600](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9409s) we can use another method that also evaluates the conversational performance of an LLM.
+- [02:36:57.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9417s) 30. Okay. So now onto the fourth and last notebook. So here we're going to use an automated way of
+- [02:37:05.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9425s) evaluating an LLM using another LLM. So for this notebook, we assume we have a data set in the
+- [02:37:12.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9432s) following form. So where we have an instruction, uh, optionally the input, the correct response.
+- [02:37:19.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9439s) So this is essentially what we had originally in the alpaca data set. And then we added the response
+- [02:37:26.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9446s) of the base model and the response of the fine tune model. So I saved it here as this file.
+- [02:37:34.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9454s) So this was something you, uh, as an exercise, hopefully generated in part two. And yeah,
+- [02:37:41.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9461s) so this is essentially, uh, containing the before and after before means before fine tuning after
+- [02:37:46.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9466s) means after fine tuning. I mean, what names you choose doesn't really matter. You can also call
+- [02:37:50.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9470s) this base model and a fine tune model, but like that we have all these entries here.
+- [02:37:57.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9477s) Um, let me go back to this one. So this is how the data set would look like.
+- [02:38:04.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9484s) And yeah, let's first lot this data set. It has 165 entries. It's only the test set, right? So we
+- [02:38:10.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9490s) only have 165 entries can take a look at one of the entries. Like I said before, there's the, um,
+- [02:38:17.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9497s) um, uh, output that we consider as correct output. And then the output by the base model and the
+- [02:38:24.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9504s) output of the fine tune model. So now here's just like a utility function that we used before
+- [02:38:30.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9510s) to format the model input. So this is just formatting the model input. Um, yeah. Then
+- [02:38:36.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9516s) the output would be like this, the one that is provided in the test set and the
+- [02:38:41.360](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9521s) the generated model response is this one here. And essentially what we are going to do is we
+- [02:38:48.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9528s) are going to ask a Llama three model to consider this input and then given the correct output,
+- [02:38:56.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9536s) assign a score to this response. So basically I'm saying giving the input
+- [02:39:02.480](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9542s) and the correct output score, this model response on a scale from 100, zero to 100,
+- [02:39:09.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9549s) where 100 is the best score and then respond with the integer number only.
+- [02:39:13.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9553s) So let's do this. See, I messed around with the notebook a bit, so I should first load this,
+- [02:39:19.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9559s) of course, and let's give it the, it's just Jason data
+- [02:39:32.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9572s) and the Jason key would be the Jason key here is just what we call the response. In this case,
+- [02:39:43.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9583s) let's use response before
+- [02:39:56.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9596s) and this would generate these model scores.
+- [02:40:02.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9602s) Okay.
+- [02:40:20.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9620s) Yeah, it's relatively fast. I would say
+- [02:40:22.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9622s) yeah, this is also where I use small data sets here because we don't want to wait an hour for
+- [02:40:34.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9634s) 50,000 responses and something like that. Okay. It's finished. So let's take a look at the scores.
+- [02:40:40.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9640s) So now we have these scores from a, on a scale from zero to 100.
+- [02:40:45.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9645s) We can actually, let's compute the accuracy.
+- [02:40:57.280](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9657s) Oh yeah. What did I do here? Oh yeah.
+- [02:41:06.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9666s) Oops. I made a mistake here.
+- [02:41:08.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9668s) Wait, where am I wrong here? Oh, I see they are already on a scale from zero, one to 100. So yeah.
+- [02:41:18.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9678s) So this should be the accuracy, right? So on an accuracy, but a score. So we have a score now of
+- [02:41:23.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9683s) 82 for this base model for the response before now for the exercise, or maybe do the same thing
+- [02:41:31.120](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9691s) for the fine tune model, the response after that you saved as part of the you know,
+- [02:41:37.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9697s) part of the exercise here in, in section two. So basically how we would do this is the same way
+- [02:41:48.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9708s) after, and then we can pin it like this.
+- [02:42:07.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9727s) Okay. So in this case actually made the model slightly worse can happen. So it was probably
+- [02:42:24.560](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9744s) because of the LoRA fine tuning. Oh, maybe this method is also not perfect. You can try a larger
+- [02:42:29.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9749s) model, but yeah. So we, we see that, uh, we got some scores that we can compare and yeah,
+- [02:42:36.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9756s) sometimes, uh, fine tuning doesn't necessarily make the model better.
+- [02:42:40.800](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9760s) Yeah. So in this workshop, we covered six topics the introduction to LLMs,
+- [02:42:46.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9766s) understanding how the input data is tokenized. We coded I would say a fraction of the
+- [02:42:51.840](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9771s) architecture just to get a feeling of what a LM looks like, how, how it's structured.
+- [02:42:58.000](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9778s) We briefly pre-trained the LLM lauded pre-trained weights. And then lastly,
+- [02:43:02.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9782s) we find you the LM. Um, I have no idea actually how long it took. I just feel like I have been
+- [02:43:06.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9786s) recording this video for like maybe three to four hours. I definitely need a break now. Uh, but I,
+- [02:43:13.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9793s) yeah, I hope it was useful and it gave you some ideas yeah, of how LLMs work and how they
+- [02:43:20.720](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9800s) are trained. So in specifically, we covered these topics, but only in brief, each topic was maybe
+- [02:43:27.200](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9807s) only 10% of what I covered in my book. So if you are interested in more information,
+- [02:43:32.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9812s) um, I have a very extensive book on all of that, where, yeah, what I just covered was like maybe
+- [02:43:37.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9817s) 10%, 20% of that. Um, other than that also, yeah, let GPT is a really useful tool in practice. If
+- [02:43:44.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9824s) you want to fine tune LLMs for real world tasks, because everything in the book is, I would say
+- [02:43:50.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9830s) more for educational purposes. It's, yeah, of course, developing a LLM that works and it can
+- [02:43:54.960](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9834s) be used in practice. Um, but here you have basically more optimized LLMs that are, you know,
+- [02:44:00.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9840s) larger and so forth. Um, so yeah, if you're interested in lit GPT, here's a link to the
+- [02:44:06.640](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9846s) GitHub repository. And we also at lightning, a developer platform that I used also here for
+- [02:44:12.320](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9852s) teaching this, uh, video workshop. So, uh, in that sense, you can use multiple GPUs for training. And
+- [02:44:19.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9859s) yeah, what's nice is really, you can switch seamlessly between CPU and GPU. So you don't
+- [02:44:24.400](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9864s) have to run the GPU the whole time. You can just switch to a CPU when you are developing code.
+- [02:44:29.040](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9869s) And then once you're ready to scale it up or run it, you can then switch to GPUs. And there's also,
+- [02:44:34.880](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9874s) I used a visual Studio code, but there's also a Jupiter lab environment.
+- [02:44:39.440](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9879s) We also have a lot of examples for fine tuning LLMs. So you can find the Studio examples here,
+- [02:44:46.160](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9886s) training models on a trillion tokens and so forth and optimized inference and so forth.
+- [02:44:51.680](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9891s) And with that, yeah, I hope this was useful. I know it was a bit messy. It was just, you know,
+- [02:44:55.520](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9895s) spontaneous, uh, a recording I did for three to four hours. Now it's not very polished. I know,
+- [02:45:01.760](https://www.youtube.com/watch?v=quh7z1q7-uc&t=9901s) but it's hopefully, uh, in some way useful to you and yeah, thanks for listening.
