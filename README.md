@@ -21,6 +21,7 @@ llm-from-scratch/
 │   └── youtube/              # workshop transcripts and source references
 ├── scripts/
 │   └── download_youtube_transcript.py
+├── colab_setup.ipynb         # optional one-time setup notebook per Colab runtime
 ├── main.py                   # placeholder
 ├── main.ipynb                # notebook entry point
 └── pyproject.toml
@@ -48,10 +49,18 @@ uv run python pretrain/train_tokenizer.py --vocab-size 2048 --format bin
 
 ### Use on Google Colab
 
-For Colab, start with `pretrain/train_tokenizer.ipynb`. Colab opens one notebook at a time and does not automatically clone the whole repo when opening a notebook from GitHub, so that notebook's first setup cell clones or reuses the repository under `/content/llm-from-scratch`.
+For Colab, the smooth path is:
+
+1. Open `colab_setup.ipynb` first in a fresh runtime.
+2. Run it once to clone or update the repo under `/content/llm-from-scratch` and install the current dependencies.
+3. Open the lesson notebook you want and connect it to the same runtime.
+4. Run the small bootstrap cell at the top of the lesson notebook.
+
+The per-notebook bootstrap cell is intentionally still present. If Colab gives a notebook a fresh runtime, that cell can install dependencies and clone the repo by itself. If you already ran `colab_setup.ipynb` in the same runtime, it just reuses the existing setup.
 
 Notebook map:
 
+- `colab_setup.ipynb` - one-time setup for a fresh Colab runtime
 - `main.ipynb` - project entry point
 - `pretrain/tokenizer.ipynb` - interactive tokenizer class and quick test
 - `pretrain/train_tokenizer.ipynb` - train tokenizer and encode the corpus
