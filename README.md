@@ -12,6 +12,8 @@ llm-from-scratch/
 ├── pretrain/
 │   ├── tokenizer.py          # Tokenizer class for train/load/encode/decode
 │   ├── tokenizer.ipynb       # notebook version for Colab
+│   ├── batching.py           # tensor batching helpers for next-token prediction
+│   ├── batching.ipynb        # walkthrough for x/y training batches
 │   ├── train_tokenizer.py    # CLI entry point
 │   ├── train_tokenizer.ipynb # Colab tokenizer training workflow
 │   └── data/                 # tokenizer model + encoded corpus (gitignored)
@@ -63,9 +65,10 @@ Notebook map:
 - `colab_setup.ipynb` - one-time setup for a fresh Colab runtime
 - `main.ipynb` - project entry point
 - `pretrain/tokenizer.ipynb` - interactive tokenizer class and quick test
+- `pretrain/batching.ipynb` - turn token IDs into `x` and `y` tensors
 - `pretrain/train_tokenizer.ipynb` - train tokenizer and encode the corpus
 
-The training notebook installs `sentencepiece` and `numpy` inside Colab and keeps outputs under `pretrain/data/`, matching the CLI folder structure.
+The notebooks install `sentencepiece`, `numpy`, and `torch` inside Colab and keep generated outputs under `pretrain/data/`, matching the CLI folder structure.
 
 ## Reference Workshop
 
@@ -95,6 +98,7 @@ text = tok.decode(tokens)
 
 ## What's Next
 
+- Tiny baseline language model
 - Transformer architecture
 - Pretraining loop
 - Inference
