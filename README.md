@@ -75,7 +75,9 @@ Notebook map:
 - `model_inspection/gemma_4_explorer.ipynb` - load a Gemma 4 checkpoint, chat with it, and inspect vocabulary, embedding, and attention weight shapes
 - `pretrain/train_tokenizer.ipynb` - train tokenizer and encode the corpus
 
-The notebooks install `sentencepiece`, `numpy`, and `torch` inside Colab and keep generated outputs under `pretrain/data/`, matching the CLI folder structure. The Gemma explorer notebook also installs `transformers`, `accelerate`, `safetensors`, and `huggingface-hub`.
+The notebooks install `sentencepiece`, `numpy`, and `torch` inside Colab and keep generated outputs under `pretrain/data/`, matching the CLI folder structure. The Gemma explorer notebook also installs `transformers>=5.5,<5.6`, `accelerate`, `safetensors`, `huggingface-hub`, and `pillow`.
+
+On local Windows AMD GPU runs, keep the AMD PyTorch wheel installed manually in `.venv`. A plain `uv sync` can replace it with the normal PyPI CPU wheel; use `uv run --no-sync` or `.venv\Scripts\python.exe` after repairing the AMD wheel.
 
 ## Reference Workshop
 
