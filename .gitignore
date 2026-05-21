@@ -15,6 +15,12 @@ ENV/
 *.ckpt
 *.pt
 *.pth
+*.safetensors
+
+# Local model/cache folders
+models/
+hf_cache/
+.cache/
 
 # uv lock
 uv.lock

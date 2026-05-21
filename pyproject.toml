@@ -8,4 +8,8 @@ dependencies = [
     "sentencepiece",
     "numpy",
     "torch>=2.9.1",
+    "transformers",
+    "accelerate",
+    "safetensors",
+    "huggingface-hub",
 ]
