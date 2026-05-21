@@ -80,10 +80,10 @@ def get_batch(
         high=max_start + 1,
         size=(config.batch_size,),
         generator=generator,
-    )
+    ).to(tokens.device)
 
-    x = torch.stack([tokens[start : start + config.context_length] for start in starts])
-    y = torch.stack(
-        [tokens[start + 1 : start + config.context_length + 1] for start in starts]
-    )
+    offsets = torch.arange(config.context_length + 1, device=tokens.device)
+    batch = tokens[starts[:, None] + offsets[None, :]]
+    x = batch[:, :-1]
+    y = batch[:, 1:]
     return x.to(config.device), y.to(config.device)

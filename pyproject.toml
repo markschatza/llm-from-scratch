@@ -7,5 +7,5 @@ requires-python = ">=3.12"
 dependencies = [
     "sentencepiece",
     "numpy",
-    "torch>=2.12.0",
+    "torch>=2.9.1",
 ]

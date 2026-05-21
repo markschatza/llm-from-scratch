@@ -138,8 +138,8 @@ class GPTLanguageModel(nn.Module):
         loss = None
         if targets is not None:
             loss = F.cross_entropy(
-                logits.view(batch_size * seq_len, self.config.vocab_size),
-                targets.view(batch_size * seq_len),
+                logits.reshape(batch_size * seq_len, self.config.vocab_size),
+                targets.reshape(batch_size * seq_len),
             )
         return logits, loss
 

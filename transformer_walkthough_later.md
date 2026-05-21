@@ -5,7 +5,7 @@ In pretrain/transformer.py, the forward pass is roughly:
 python
 
 
-
+----COMPLETE----
 logits, loss = model(x, y)
 
 The computation path is:
@@ -46,7 +46,7 @@ loss
 
 Inside each Transformer block, it walks backward through two main branches:
 text
-
+----DONE COMPLETE----
 
 
 block output
