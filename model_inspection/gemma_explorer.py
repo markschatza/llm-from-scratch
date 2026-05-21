@@ -7,12 +7,15 @@ notebook can explain the ideas without turning into a pile of utility code.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import torch
 
 
 DEFAULT_MODEL_ID = "google/gemma-4-E2B-it"
+DEFAULT_CACHE_DIR = Path(__file__).resolve().parents[1] / "hf_cache"
+_MODEL_CACHE: dict[tuple[Any, ...], "GemmaChatModel"] = {}
 
 
 @dataclass(frozen=True)
@@ -78,6 +81,63 @@ def choose_dtype() -> torch.dtype:
     return torch.float32
 
 
+def _read_dotenv_token(env_path: Path | None = None) -> str | None:
+    """Read HF_TOKEN from a local .env file without requiring python-dotenv."""
+    import os
+
+    env_path = env_path or Path(__file__).resolve().parents[1] / ".env"
+    if not env_path.exists():
+        return None
+
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        if key.strip() in {"HF_TOKEN", "HUGGING_FACE_HUB_TOKEN"}:
+            token = value.strip().strip('"').strip("'")
+            if token:
+                os.environ.setdefault("HF_TOKEN", token)
+                os.environ.setdefault("HUGGING_FACE_HUB_TOKEN", token)
+                return token
+    return None
+
+
+def resolve_hf_token(token: str | None = None) -> str | None:
+    """Resolve a Hugging Face token from an explicit arg, env, or local .env."""
+    import os
+
+    return (
+        token
+        or os.environ.get("HF_TOKEN")
+        or os.environ.get("HUGGING_FACE_HUB_TOKEN")
+        or _read_dotenv_token()
+    )
+
+
+def get_hf_cache_dir(cache_dir: str | Path | None = None) -> Path:
+    """Return the disk cache used for Hugging Face model files."""
+    return Path(cache_dir).expanduser().resolve() if cache_dir else DEFAULT_CACHE_DIR
+
+
+def load_gemma_config(
+    model_id: str = DEFAULT_MODEL_ID,
+    *,
+    token: str | None = None,
+    cache_dir: str | Path | None = None,
+) -> Any:
+    """Load only the small Hugging Face config file using the shared cache."""
+    from transformers import AutoConfig
+
+    resolved_cache_dir = get_hf_cache_dir(cache_dir)
+    resolved_cache_dir.mkdir(parents=True, exist_ok=True)
+    return AutoConfig.from_pretrained(
+        model_id,
+        token=resolve_hf_token(token),
+        cache_dir=str(resolved_cache_dir),
+    )
+
+
 def load_gemma_chat_model(
     model_id: str = DEFAULT_MODEL_ID,
     *,
@@ -85,6 +145,9 @@ def load_gemma_chat_model(
     device_map: str | dict[str, Any] = "auto",
     attn_implementation: str = "sdpa",
     load_in_4bit: bool = False,
+    token: str | None = None,
+    cache_dir: str | Path | None = None,
+    reuse_loaded: bool = True,
 ) -> GemmaChatModel:
     """Load a Gemma chat model through Hugging Face Transformers.
 
@@ -95,6 +158,9 @@ def load_gemma_chat_model(
 
     torch_dtype = choose_dtype() if dtype == "auto" else dtype
     quantization_config = None
+    resolved_token = resolve_hf_token(token)
+    resolved_cache_dir = get_hf_cache_dir(cache_dir)
+    resolved_cache_dir.mkdir(parents=True, exist_ok=True)
 
     if load_in_4bit:
         from transformers import BitsAndBytesConfig
@@ -106,16 +172,38 @@ def load_gemma_chat_model(
         )
         torch_dtype = None
 
-    processor = AutoProcessor.from_pretrained(model_id, padding_side="left")
+    cache_key = (
+        model_id,
+        str(torch_dtype),
+        str(device_map),
+        attn_implementation,
+        load_in_4bit,
+        str(resolved_cache_dir),
+        bool(resolved_token),
+    )
+    if reuse_loaded and cache_key in _MODEL_CACHE:
+        return _MODEL_CACHE[cache_key]
+
+    processor = AutoProcessor.from_pretrained(
+        model_id,
+        padding_side="left",
+        token=resolved_token,
+        cache_dir=str(resolved_cache_dir),
+    )
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         device_map=device_map,
         torch_dtype=torch_dtype,
         attn_implementation=attn_implementation,
         quantization_config=quantization_config,
+        token=resolved_token,
+        cache_dir=str(resolved_cache_dir),
     )
     model.eval()
-    return GemmaChatModel(model=model, processor=processor)
+    chat_model = GemmaChatModel(model=model, processor=processor)
+    if reuse_loaded:
+        _MODEL_CACHE[cache_key] = chat_model
+    return chat_model
 
 
 def summarize_config(config: Any) -> dict[str, Any]:
@@ -207,4 +295,3 @@ def embedding_shapes(model: torch.nn.Module) -> list[dict[str, Any]]:
         ("embed_tokens", "embed_tokens_per_layer", "lm_head.weight"),
         limit=20,
     )
-

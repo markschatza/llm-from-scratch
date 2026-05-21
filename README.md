@@ -79,6 +79,8 @@ The notebooks install `sentencepiece`, `numpy`, and `torch` inside Colab and kee
 
 On local Windows AMD GPU runs, keep the AMD PyTorch wheel installed manually in `.venv`. A plain `uv sync` can replace it with the normal PyPI CPU wheel; use `uv run --no-sync` or `.venv\Scripts\python.exe` after repairing the AMD wheel.
 
+For Hugging Face gated model access, put `HF_TOKEN=...` in a local `.env` file or set `HF_TOKEN` / `HUGGING_FACE_HUB_TOKEN` in your shell. The Gemma explorer uses the token automatically and stores downloaded model files in the ignored `hf_cache/` folder.
+
 ## Reference Workshop
 
 The current reference workshop is:
