@@ -16,11 +16,12 @@ llm-from-scratch/
 │   ├── batching.ipynb        # walkthrough for x/y training batches
 │   ├── transformer.py        # small GPT-style Transformer model
 │   ├── transformer.ipynb     # forward pass, loss, tiny training loop
-│   ├── gemma_explorer.py     # Hugging Face Gemma loading + inspection helpers
-│   ├── gemma_4_explorer.ipynb # load, chat with, and inspect Gemma 4 weights
 │   ├── train_tokenizer.py    # CLI entry point
 │   ├── train_tokenizer.ipynb # Colab tokenizer training workflow
 │   └── data/                 # tokenizer model + encoded corpus (gitignored)
+├── model_inspection/
+│   ├── gemma_explorer.py     # Hugging Face Gemma loading + inspection helpers
+│   └── gemma_4_explorer.ipynb # load, chat with, and inspect Gemma 4 weights
 ├── data/
 │   └── van-life-story.txt    # training corpus
 ├── references/
@@ -71,7 +72,7 @@ Notebook map:
 - `pretrain/tokenizer.ipynb` - interactive tokenizer class and quick test
 - `pretrain/batching.ipynb` - turn token IDs into `x` and `y` tensors
 - `pretrain/transformer.ipynb` - instantiate a tiny GPT-style Transformer
-- `pretrain/gemma_4_explorer.ipynb` - load a Gemma 4 checkpoint, chat with it, and inspect vocabulary, embedding, and attention weight shapes
+- `model_inspection/gemma_4_explorer.ipynb` - load a Gemma 4 checkpoint, chat with it, and inspect vocabulary, embedding, and attention weight shapes
 - `pretrain/train_tokenizer.ipynb` - train tokenizer and encode the corpus
 
 The notebooks install `sentencepiece`, `numpy`, and `torch` inside Colab and keep generated outputs under `pretrain/data/`, matching the CLI folder structure. The Gemma explorer notebook also installs `transformers`, `accelerate`, `safetensors`, and `huggingface-hub`.

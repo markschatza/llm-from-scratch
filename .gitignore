@@ -33,6 +33,7 @@ uv.lock
 # OS
 .DS_Store
 Thumbs.db
+.ipynb_checkpoints/
 
 # Pretrain outputs
 pretrain/data/sp*
